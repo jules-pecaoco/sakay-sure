@@ -29,7 +29,7 @@ export default function RouteTypeToggle({ value, onChange, driverCount, commuter
         >
           {opt.label}
           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full
-            ${value === opt.value ? 'bg-sky-100 text-sky-600' : 'bg-slate-200 text-slate-500'}`}>
+            ${value === opt.value ? 'bg-primary-100 text-primary-600' : 'bg-slate-200 text-slate-500'}`}>
             {countFor(opt.value)}
           </span>
         </button>

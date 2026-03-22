@@ -94,8 +94,8 @@ export default function LoginForm() {
         type="submit"
         disabled={loading}
         className="
-          w-full rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white
-          transition-all hover:bg-sky-600 active:scale-[.98]
+          w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white
+          transition-all hover:bg-primary-600 active:scale-[.98]
           disabled:opacity-60 disabled:cursor-not-allowed
           flex items-center justify-center gap-2
         "
@@ -114,7 +114,7 @@ export default function LoginForm() {
         No account?{' '}
         <Link
           to="/signup"
-          className="font-semibold text-sky-600 hover:text-sky-700"
+          className="font-semibold text-primary-600 hover:text-primary-700"
         >
           Create one
         </Link>

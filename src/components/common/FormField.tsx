@@ -21,7 +21,7 @@ export default function FormField({ label, error, id, ...props }: FormFieldProps
           ${
             error
               ? "border-red-400 bg-red-50 focus:border-red-500"
-              : "border-slate-200 bg-white focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15"
+              : "border-slate-200 bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
           }
         `}
         {...props}

@@ -1,18 +1,43 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
+/*
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  SAKAY SURE — Brand Design Tokens                                   ║
+ * ║                                                                     ║
+ * ║  To rebrand the app, update the --color-primary-* and               ║
+ * ║  --color-accent-* values below. Every component references          ║
+ * ║  these tokens, so a single edit here propagates site-wide.          ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+ */
 
+@theme {
+  /* ── Primary brand color (sky blue) ─────────────────────────────── */
+  --color-primary-50:  #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+
+  /* ── Accent color (purple — community / commuter features) ──────── */
+  --color-accent-50:  #faf5ff;
+  --color-accent-100: #f3e8ff;
+  --color-accent-200: #e9d5ff;
+  --color-accent-500: #a855f7;
+  --color-accent-600: #9333ea;
+  --color-accent-700: #7e22ce;
+
+  /* ── Semantic surfaces ──────────────────────────────────────────── */
   --color-surface: #f8fafc;
   --color-card: #ffffff;
+  --color-muted: #94a3b8;
 
+  /* ── Typography ─────────────────────────────────────────────────── */
   --font-sans: "Inter", system-ui, sans-serif;
 
+  /* ── Shared radii ───────────────────────────────────────────────── */
   --radius-card: 1.25rem;
   --radius-input: 0.75rem;
   --radius-btn: 0.75rem;
@@ -33,7 +58,7 @@ body,
 
 body {
   font-family: var(--font-sans);
-  background-color: #f8fafc;
+  background-color: var(--color-surface);
   color: #1e293b;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

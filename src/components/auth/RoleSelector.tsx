@@ -1,4 +1,6 @@
+import { User, TramFront } from "lucide-react";
 import type { UserRole } from "@/types";
+import type { ReactNode } from "react";
 
 interface RoleSelectorProps {
   selected: UserRole | null;
@@ -9,7 +11,7 @@ const ROLES: {
   value: UserRole;
   label: string;
   description: string;
-  emoji: string;
+  icon: ReactNode;
   color: string;
   activeColor: string;
 }[] = [
@@ -17,15 +19,15 @@ const ROLES: {
     value: "commuter",
     label: "Commuter",
     description: "Find routes, view ETAs, and share tips with the community.",
-    emoji: "🧍",
+    icon: <User className="w-7 h-7" />,
     color: "border-slate-200 bg-white text-slate-700",
-    activeColor: "border-sky-500 bg-sky-50 text-sky-800 ring-2 ring-sky-500/20",
+    activeColor: "border-primary-500 bg-primary-50 text-primary-800 ring-2 ring-primary-500/20",
   },
   {
     value: "driver",
     label: "Driver",
     description: "Register your route, set your schedule, and go active.",
-    emoji: "🚌",
+    icon: <TramFront className="w-7 h-7" />,
     color: "border-slate-200 bg-white text-slate-700",
     activeColor: "border-amber-500 bg-amber-50 text-amber-800 ring-2 ring-amber-500/20",
   },
@@ -50,8 +52,8 @@ export default function RoleSelector({ selected, onChange }: RoleSelectorProps) 
                 hover:border-slate-300
               `}
             >
-              <span className="text-3xl" role="img" aria-label={role.label}>
-                {role.emoji}
+              <span className={isSelected && role.value === "commuter" ? "text-primary-600" : isSelected ? "text-amber-600" : "text-slate-400"}>
+                {role.icon}
               </span>
               <span className="text-sm font-semibold">{role.label}</span>
               <span className="text-xs leading-snug opacity-70">{role.description}</span>

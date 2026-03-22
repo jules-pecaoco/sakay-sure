@@ -6,6 +6,7 @@ import { useAllRoutes } from "@/hooks/useAllRoutes";
 import RouteTypeToggle, { type RouteFilter } from "@/components/routes/RouteTypeToggle";
 import { DriverRouteCard, CommuterRouteCard } from "@/components/routes/RouteCard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { MapIcon, Search } from "lucide-react";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -49,7 +50,7 @@ export default function ExplorePage() {
           source: sourceId,
           layout: { "line-join": "round", "line-cap": "round" },
           paint: {
-            "line-color": route.isActive ? "#22c55e" : "#3b82f6",
+            "line-color": route.isActive ? "#22c55e" : "#000000",
             "line-width": 3,
             "line-opacity": 0.75,
           },
@@ -78,9 +79,9 @@ export default function ExplorePage() {
         background:#22c55e;border:3px solid white;
         box-shadow:0 2px 8px rgba(0,0,0,0.25);
         display:flex;align-items:center;justify-content:center;
-        font-size:14px;
       `;
-      el.textContent = "🚌";
+      // Use an SVG bus icon instead of emoji
+      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>`;
       const marker = new mapboxgl.Marker({ element: el }).setLngLat([driver.position.lng, driver.position.lat]).addTo(map);
       markersRef.current.push(marker);
     });
@@ -111,35 +112,23 @@ export default function ExplorePage() {
             type="button"
             onClick={() => setShowMap((v) => !v)}
             className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
-              showMap ? "bg-sky-500 text-white" : "bg-slate-100 text-slate-600"
+              showMap ? "bg-primary-500 text-white" : "bg-slate-100 text-slate-600"
             }`}
           >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-              <path
-                fillRule="evenodd"
-                d="M8.157 2.176a1.5 1.5 0 00-1.147 0l-4.083 1.69A1.5 1.5 0 002 5.25v10.877a.75.75 0 001.07.68l3.428-1.419 2.841 1.177a1.5 1.5 0 001.147 0l2.841-1.177 3.428 1.42a.75.75 0 001.07-.68V5.25a1.5 1.5 0 00-.927-1.384l-4.083-1.69zM7.5 4.42V15.31l-3 1.242V5.66l3-1.242zM9 15.31V4.42l2 .828V16.14l-2-.829zm3.5.829V5.248l3 1.242v10.892l-3-1.243z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <MapIcon className="w-4 h-4" />
             {showMap ? "Hide map" : "Map view"}
           </button>
         </div>
 
         {/* Search */}
         <div className="relative">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400">
-            <path
-              fillRule="evenodd"
-              d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="search"
             placeholder="Search routes or stops…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-sky-400 focus:bg-white"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-400 focus:bg-white"
           />
         </div>
 
@@ -158,7 +147,9 @@ export default function ExplorePage() {
           </div>
         ) : totalFiltered === 0 ? (
           <div className="flex flex-col items-center py-16 text-center gap-3">
-            <span className="text-4xl">🗺️</span>
+            <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center">
+              <Search className="w-7 h-7 text-primary-500" />
+            </div>
             <p className="font-semibold text-slate-600">No routes found</p>
             <p className="text-sm text-slate-400">{search ? "Try a different search term." : "Be the first to add a community route!"}</p>
           </div>

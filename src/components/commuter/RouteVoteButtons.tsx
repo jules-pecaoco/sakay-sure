@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getUserVote, castVote, type VoteValue } from "@/services/firebase/commuterRoutes";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 
 interface RouteVoteButtonsProps {
   routeId: string;
@@ -99,7 +100,7 @@ export default function RouteVoteButtons({ routeId, helpfulVotes, notHelpfulVote
           }
         `}
       >
-        👍 {counts.helpful}
+        <ThumbsUp className="w-3 h-3" /> {counts.helpful}
         {isHelpfulActive && <span className="text-[10px] text-green-600 font-semibold">· undo</span>}
       </button>
 
@@ -121,7 +122,7 @@ export default function RouteVoteButtons({ routeId, helpfulVotes, notHelpfulVote
           }
         `}
       >
-        👎 {counts.notHelpful}
+        <ThumbsDown className="w-3 h-3" /> {counts.notHelpful}
         {isNotHelpfulActive && <span className="text-[10px] text-red-500 font-semibold">· undo</span>}
       </button>
 

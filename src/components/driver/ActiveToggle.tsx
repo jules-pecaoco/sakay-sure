@@ -44,8 +44,9 @@ export default function ActiveToggle({ route }: ActiveToggleProps) {
       `}
     >
       <div className="space-y-0.5">
-        <p className={`text-sm font-semibold ${active ? 'text-green-700' : 'text-slate-600'}`}>
-          {active ? '🟢 Currently active' : '⚫ Inactive'}
+        <p className={`text-sm font-semibold flex items-center gap-1.5 ${active ? 'text-green-700' : 'text-slate-600'}`}>
+          <span className={`w-2 h-2 rounded-full shrink-0 ${active ? 'bg-green-500 animate-pulse' : 'bg-slate-400'}`} />
+          {active ? 'Currently active' : 'Inactive'}
         </p>
         <p className="text-xs text-slate-400">
           {active

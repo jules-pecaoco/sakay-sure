@@ -7,7 +7,7 @@ const VARIANT_STYLES = {
   default: 'bg-slate-100 text-slate-600',
   warning: 'bg-amber-100 text-amber-700',
   success: 'bg-green-100 text-green-700',
-  info:    'bg-sky-100 text-sky-700',
+  info:    'bg-primary-100 text-primary-700',
 }
 
 export default function TipTag({ label, variant = 'default' }: TipTagProps) {

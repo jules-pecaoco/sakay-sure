@@ -16,7 +16,7 @@ export default function LoadingSpinner({ fullScreen = false, size = "md", messag
       <div
         className={`
           ${sizeMap[size]}
-          rounded-full border-slate-200 border-t-sky-500 animate-spin
+          rounded-full border-slate-200 border-t-primary-500 animate-spin
         `}
       />
       {message && <p className="text-sm text-slate-500 font-medium">{message}</p>}

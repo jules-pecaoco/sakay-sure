@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import { LogOut } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth()
@@ -20,7 +21,7 @@ export default function ProfilePage() {
   const roleBadge =
     user?.role === 'driver'
       ? 'bg-amber-100 text-amber-700'
-      : 'bg-sky-100 text-sky-700'
+      : 'bg-primary-100 text-primary-700'
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -32,7 +33,7 @@ export default function ProfilePage() {
       <div className="px-4 py-6 space-y-4 max-w-lg mx-auto">
         {/* Avatar + info card */}
         <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 text-xl font-bold shrink-0">
+          <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-xl font-bold shrink-0">
             {user?.displayName?.charAt(0).toUpperCase() ?? '?'}
           </div>
           <div className="flex-1 min-w-0">
@@ -93,19 +94,7 @@ export default function ProfilePage() {
             </>
           ) : (
             <>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-4 h-4"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
+              <LogOut className="w-4 h-4" />
               Sign out
             </>
           )}

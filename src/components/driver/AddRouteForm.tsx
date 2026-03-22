@@ -10,6 +10,7 @@ import PricingFields from './PricingFields'
 import StopSearchInput from '@/components/map/StopSearchInput'
 import RouteMapPreview from '@/components/map/RouteMapPreview'
 import LocationPermissionBanner from '@/components/common/LocationPermissionBanner'
+import { Check, X, ChevronUp, ChevronDown } from 'lucide-react'
 import type { VehicleType, Stop, DriverPricing } from '@/types'
 
 const STEPS = ['Details', 'Stops', 'Schedule'] as const
@@ -25,15 +26,15 @@ function StepBar({ current }: { current: StepIndex }) {
           <div key={label} className="flex items-center gap-2 flex-1">
             <div className={`
               flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0
-              ${done ? 'bg-sky-500 text-white' : active ? 'bg-sky-100 text-sky-600 ring-2 ring-sky-500' : 'bg-slate-100 text-slate-400'}
+              ${done ? 'bg-primary-500 text-white' : active ? 'bg-primary-100 text-primary-600 ring-2 ring-primary-500' : 'bg-slate-100 text-slate-400'}
             `}>
-              {done ? '✓' : i + 1}
+              {done ? <Check className="w-3.5 h-3.5" /> : i + 1}
             </div>
-            <span className={`text-xs font-medium ${active ? 'text-sky-600' : done ? 'text-slate-500' : 'text-slate-400'}`}>
+            <span className={`text-xs font-medium ${active ? 'text-primary-600' : done ? 'text-slate-500' : 'text-slate-400'}`}>
               {label}
             </span>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-px ${done ? 'bg-sky-300' : 'bg-slate-200'}`} />
+              <div className={`flex-1 h-px ${done ? 'bg-primary-300' : 'bg-slate-200'}`} />
             )}
           </div>
         )
@@ -167,7 +168,7 @@ export default function AddRouteForm() {
           <button
             type="button"
             onClick={() => { if (validateStep1()) setStep(1) }}
-            className="w-full rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white hover:bg-sky-600 active:scale-[.98] transition-all"
+            className="w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all"
           >
             Next: Add stops →
           </button>
@@ -193,17 +194,23 @@ export default function AddRouteForm() {
               {stops.map((stop, i) => (
                 <div key={stop.id} className="flex items-center gap-2 bg-white rounded-xl border border-slate-200 px-3 py-2.5">
                   <span className={`text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shrink-0
-                    ${i === 0 ? 'bg-green-100 text-green-700' : i === stops.length - 1 ? 'bg-red-100 text-red-600' : 'bg-sky-100 text-sky-600'}`}>
+                    ${i === 0 ? 'bg-green-100 text-green-700' : i === stops.length - 1 ? 'bg-red-100 text-red-600' : 'bg-primary-100 text-primary-600'}`}>
                     {i === 0 ? 'S' : i === stops.length - 1 ? 'E' : i}
                   </span>
                   <span className="flex-1 text-sm text-slate-700 truncate">{stop.name.split(',')[0]}</span>
                   <div className="flex items-center gap-1">
                     <button type="button" onClick={() => handleMoveStop(stop.id, 'up')} disabled={i === 0}
-                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25 text-xs">▲</button>
+                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25">
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </button>
                     <button type="button" onClick={() => handleMoveStop(stop.id, 'down')} disabled={i === stops.length - 1}
-                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25 text-xs">▼</button>
+                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25">
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
                     <button type="button" onClick={() => handleRemoveStop(stop.id)}
-                      className="p-1 text-red-400 hover:text-red-600 text-xs">✕</button>
+                      className="p-1 text-red-400 hover:text-red-600">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -222,7 +229,7 @@ export default function AddRouteForm() {
               ← Back
             </button>
             <button type="button" onClick={() => { if (validateStep2()) setStep(2) }}
-              className="flex-1 rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white hover:bg-sky-600 active:scale-[.98] transition-all">
+              className="flex-1 rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all">
               Next: Schedule →
             </button>
           </div>
@@ -238,20 +245,20 @@ export default function AddRouteForm() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500">Start time</label>
                 <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15" />
+                  className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500">End time</label>
                 <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15" />
+                  className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15" />
               </div>
             </div>
             {scheduleError && <p className="text-xs text-red-500">{scheduleError}</p>}
           </div>
 
           {/* Summary */}
-          <div className="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-2">
-            <p className="text-xs font-semibold text-sky-600 uppercase tracking-wider">Summary</p>
+          <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4 space-y-2">
+            <p className="text-xs font-semibold text-primary-600 uppercase tracking-wider">Summary</p>
             <p className="text-sm font-semibold text-slate-800">{name}</p>
             <p className="text-xs text-slate-500 capitalize">
               {vehicleType} · {stops.length} stops · {startTime}–{endTime}
@@ -274,10 +281,12 @@ export default function AddRouteForm() {
               ← Back
             </button>
             <button type="button" onClick={handleSubmit} disabled={submitting}
-              className="flex-1 rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white hover:bg-sky-600 active:scale-[.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+              className="flex-1 rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2">
               {submitting ? (
                 <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Saving…</>
-              ) : 'Save route ✓'}
+              ) : (
+                <><Check className="w-4 h-4" /> Save route</>
+              )}
             </button>
           </div>
         </div>

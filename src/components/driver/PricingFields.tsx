@@ -35,7 +35,7 @@ export default function PricingFields({ pricing, onChange }: PricingFieldsProps)
           aria-checked={enabled}
           onClick={() => toggle(!enabled)}
           className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
-            enabled ? 'bg-sky-500' : 'bg-slate-200'
+            enabled ? 'bg-primary-500' : 'bg-slate-200'
           }`}
         >
           <span
@@ -65,7 +65,7 @@ export default function PricingFields({ pricing, onChange }: PricingFieldsProps)
                 placeholder="13"
                 value={pricing?.minFare ?? ''}
                 onChange={(e) => update('minFare', e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white pl-7 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15"
+                className="w-full rounded-xl border border-slate-200 bg-white pl-7 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
               />
             </div>
             <p className="text-xs text-slate-400">Base boarding fare for the first stop</p>
@@ -87,7 +87,7 @@ export default function PricingFields({ pricing, onChange }: PricingFieldsProps)
                 placeholder="Leave blank if flat rate"
                 value={pricing?.perStopFare ?? ''}
                 onChange={(e) => update('perStopFare', e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white pl-7 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15"
+                className="w-full rounded-xl border border-slate-200 bg-white pl-7 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
               />
             </div>
             <p className="text-xs text-slate-400">Charged per additional stop after boarding</p>
@@ -95,8 +95,8 @@ export default function PricingFields({ pricing, onChange }: PricingFieldsProps)
 
           {/* Live preview */}
           {pricing && pricing.minFare > 0 && (
-            <div className="bg-white border border-sky-100 rounded-xl px-3 py-2.5 space-y-1">
-              <p className="text-[10px] font-semibold text-sky-600 uppercase tracking-wider">
+            <div className="bg-white border border-primary-100 rounded-xl px-3 py-2.5 space-y-1">
+              <p className="text-[10px] font-semibold text-primary-600 uppercase tracking-wider">
                 Fare preview
               </p>
               <p className="text-xs text-slate-600">

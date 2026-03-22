@@ -1,6 +1,8 @@
 import ConfidencePill from "@/components/common/ConfidencePill";
 import RushHourBanner from "@/components/common/RushHourBanner";
+import { Timer, TramFront, Clock } from "lucide-react";
 import type { PredictionResult } from "@/types";
+import type { ReactNode } from "react";
 
 interface PredictionCardProps {
   prediction: PredictionResult;
@@ -24,9 +26,9 @@ export default function PredictionCard({ prediction, routeName }: PredictionCard
       )}
 
       <div className="grid grid-cols-2 gap-px bg-slate-100 mt-3">
-        <MetricTile icon="⏱" label="ETA range" value={`${etaRange.min}–${etaRange.max} min`} sub="estimated wait" highlight={isRushHour} />
-        <MetricTile icon="🚌" label="Vehicles arriving" value={`${vehicleRange.min}–${vehicleRange.max}`} sub="in next 30 min" />
-        <MetricTile icon="🕐" label="Best time to leave" value={`${bestTimeWindow.from} – ${bestTimeWindow.to}`} sub="off-peak window" colSpan />
+        <MetricTile icon={<Timer className="w-4 h-4" />} label="ETA range" value={`${etaRange.min}–${etaRange.max} min`} sub="estimated wait" highlight={isRushHour} />
+        <MetricTile icon={<TramFront className="w-4 h-4" />} label="Vehicles arriving" value={`${vehicleRange.min}–${vehicleRange.max}`} sub="in next 30 min" />
+        <MetricTile icon={<Clock className="w-4 h-4" />} label="Best time to leave" value={`${bestTimeWindow.from} – ${bestTimeWindow.to}`} sub="off-peak window" colSpan />
       </div>
 
       <div className="px-4 py-3">
@@ -44,7 +46,7 @@ function MetricTile({
   highlight = false,
   colSpan = false,
 }: {
-  icon: string;
+  icon: ReactNode;
   label: string;
   value: string;
   sub: string;
@@ -54,7 +56,7 @@ function MetricTile({
   return (
     <div className={`bg-white px-4 py-3.5 flex flex-col gap-1 ${colSpan ? "col-span-2" : ""}`}>
       <div className="flex items-center gap-1.5">
-        <span className="text-base">{icon}</span>
+        <span className="text-primary-500">{icon}</span>
         <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{label}</span>
       </div>
       <p className={`text-xl font-bold tracking-tight ${highlight ? "text-orange-600" : "text-slate-800"}`}>{value}</p>

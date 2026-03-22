@@ -1,3 +1,4 @@
+import { MapPin } from 'lucide-react'
 import type { LocationStatus } from '@/hooks/useUserLocation'
 
 interface LocationPermissionBannerProps {
@@ -14,7 +15,7 @@ export default function LocationPermissionBanner({
   if (status === 'denied') {
     return (
       <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
-        <span className="text-lg shrink-0 mt-0.5">📍</span>
+        <MapPin className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
         <div>
           <p className="text-xs font-semibold text-amber-700">Location access denied</p>
           <p className="text-xs text-amber-600 mt-0.5 leading-relaxed">
@@ -26,11 +27,11 @@ export default function LocationPermissionBanner({
   }
 
   return (
-    <div className="flex items-center gap-3 bg-sky-50 border border-sky-200 rounded-2xl px-4 py-3">
-      <span className="text-lg shrink-0">📍</span>
+    <div className="flex items-center gap-3 bg-primary-50 border border-primary-200 rounded-2xl px-4 py-3">
+      <MapPin className="w-5 h-5 text-primary-600 shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-sky-700">Use your location</p>
-        <p className="text-xs text-sky-500 mt-0.5">
+        <p className="text-xs font-semibold text-primary-700">Use your location</p>
+        <p className="text-xs text-primary-500 mt-0.5">
           Centers the map and improves stop suggestions
         </p>
       </div>
@@ -38,7 +39,7 @@ export default function LocationPermissionBanner({
         type="button"
         onClick={onRequest}
         disabled={status === 'requesting'}
-        className="shrink-0 rounded-xl bg-sky-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-600 transition-colors disabled:opacity-60 flex items-center gap-1.5"
+        className="shrink-0 rounded-xl bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-600 transition-colors disabled:opacity-60 flex items-center gap-1.5"
       >
         {status === 'requesting' ? (
           <>

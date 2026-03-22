@@ -10,6 +10,7 @@ import StopSearchInput from "@/components/map/StopSearchInput";
 import RouteMapPreview from "@/components/map/RouteMapPreview";
 import LocationPermissionBanner from "@/components/common/LocationPermissionBanner";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { Lock, X, ArrowLeft } from "lucide-react";
 import type { Stop, CommuterRouteTips } from "@/types";
 
 function Toggle({
@@ -34,7 +35,7 @@ function Toggle({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${checked ? "bg-sky-500" : "bg-slate-200"}`}
+        className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${checked ? "bg-primary-500" : "bg-slate-200"}`}
       >
         <span
           className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${checked ? "translate-x-5" : "translate-x-0"}`}
@@ -133,7 +134,7 @@ export default function EditCommuterRoutePage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-3">
         <p className="text-slate-500">Route not found.</p>
-        <button onClick={() => navigate("/explore")} className="text-sky-600 text-sm font-semibold">
+        <button onClick={() => navigate("/explore")} className="text-primary-600 text-sm font-semibold">
           ← Back to Explore
         </button>
       </div>
@@ -144,10 +145,12 @@ export default function EditCommuterRoutePage() {
   if (user && route.authorId !== user.uid) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-3 px-6 text-center">
-        <span className="text-4xl">🔒</span>
+        <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center">
+          <Lock className="w-7 h-7 text-slate-400" />
+        </div>
         <p className="font-semibold text-slate-700">Not your route</p>
         <p className="text-sm text-slate-400">You can only edit routes you've submitted.</p>
-        <button onClick={() => navigate("/explore")} className="text-sky-600 text-sm font-semibold">
+        <button onClick={() => navigate("/explore")} className="text-primary-600 text-sm font-semibold">
           ← Back to Explore
         </button>
       </div>
@@ -162,13 +165,7 @@ export default function EditCommuterRoutePage() {
           onClick={() => navigate("/explore")}
           className="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors -ml-1"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-            <path
-              fillRule="evenodd"
-              d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
           <h1 className="text-lg font-bold text-slate-800">Edit community route</h1>
@@ -189,13 +186,13 @@ export default function EditCommuterRoutePage() {
             <div key={stop.id} className="flex items-center gap-2 bg-white rounded-xl border border-slate-200 px-3 py-2.5">
               <span
                 className={`text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shrink-0
-                ${i === 0 ? "bg-green-100 text-green-700" : i === stops.length - 1 ? "bg-red-100 text-red-600" : "bg-sky-100 text-sky-600"}`}
+                ${i === 0 ? "bg-green-100 text-green-700" : i === stops.length - 1 ? "bg-red-100 text-red-600" : "bg-primary-100 text-primary-600"}`}
               >
                 {i === 0 ? "S" : i === stops.length - 1 ? "E" : i}
               </span>
               <span className="flex-1 text-sm text-slate-700 truncate">{stop.name.split(",")[0]}</span>
-              <button type="button" onClick={() => handleRemoveStop(stop.id)} className="p-1 text-red-400 hover:text-red-600 text-xs">
-                ✕
+              <button type="button" onClick={() => handleRemoveStop(stop.id)} className="p-1 text-red-400 hover:text-red-600">
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           ))}
@@ -221,7 +218,7 @@ export default function EditCommuterRoutePage() {
               placeholder="e.g. Flooded at Colon during rain"
               value={hazards}
               onChange={(e) => setHazards(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
             />
           </div>
 
@@ -232,7 +229,7 @@ export default function EditCommuterRoutePage() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 resize-none"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15 resize-none"
             />
           </div>
         </div>
@@ -243,7 +240,7 @@ export default function EditCommuterRoutePage() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="w-full rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white hover:bg-sky-600 active:scale-[.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+          className="w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
         >
           {saving ? (
             <>

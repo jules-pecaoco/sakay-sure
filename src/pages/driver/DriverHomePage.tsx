@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useDriverRoutes } from '@/hooks/useDriverRoutes'
 import DriverRouteCard from '@/components/driver/DriverRouteCard'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { TramFront, PlusCircle } from 'lucide-react'
 
 export default function DriverHomePage() {
   const { user } = useAuth()
@@ -18,7 +19,7 @@ export default function DriverHomePage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl font-bold text-slate-800">
-              Hi, {user?.displayName?.split(' ')[0]} 👋
+              Hi, {user?.displayName?.split(' ')[0]}
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">
               {routes.length === 0
@@ -52,13 +53,11 @@ export default function DriverHomePage() {
           onClick={() => navigate('/driver/add-route')}
           className="
             w-full flex items-center justify-center gap-2
-            rounded-2xl bg-sky-500 py-4 text-sm font-semibold text-white
-            shadow-sm hover:bg-sky-600 active:scale-[.98] transition-all
+            rounded-2xl bg-primary-500 py-4 text-sm font-semibold text-white
+            shadow-sm hover:bg-primary-600 active:scale-[.98] transition-all
           "
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clipRule="evenodd"/>
-          </svg>
+          <PlusCircle className="w-5 h-5" />
           Add new route
         </button>
 
@@ -87,7 +86,9 @@ export default function DriverHomePage() {
 function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center px-6">
-      <div className="text-5xl mb-4">🚌</div>
+      <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mb-4">
+        <TramFront className="w-8 h-8 text-primary-500" />
+      </div>
       <h3 className="font-semibold text-slate-700 mb-1">No routes yet</h3>
       <p className="text-sm text-slate-400 mb-6 leading-relaxed">
         Add your first route so commuters can find you and get ETAs.
@@ -95,7 +96,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
       <button
         type="button"
         onClick={onAdd}
-        className="rounded-xl bg-sky-500 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-600 transition-all"
+        className="rounded-xl bg-primary-500 px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600 transition-all"
       >
         Add your first route
       </button>

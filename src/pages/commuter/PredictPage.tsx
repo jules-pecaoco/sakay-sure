@@ -4,6 +4,7 @@ import { runPrediction } from '@/engine'
 import PredictionCard from '@/components/predictions/PredictionCard'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import RouteMapPreview from '@/components/map/RouteMapPreview'
+import { Search } from 'lucide-react'
 
 export default function PredictPage() {
   const [params] = useSearchParams()
@@ -114,7 +115,9 @@ export default function PredictPage() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center py-16 text-center gap-3 px-6">
-      <span className="text-5xl">🔍</span>
+      <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center">
+        <Search className="w-7 h-7 text-primary-500" />
+      </div>
       <h3 className="font-semibold text-slate-700">No route selected</h3>
       <p className="text-sm text-slate-400 leading-relaxed">
         Go to <strong>Explore</strong>, tap any route card, and predictions will appear here.

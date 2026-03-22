@@ -1,16 +1,18 @@
+import { TramFront, Bus, Bike } from 'lucide-react'
 import type { VehicleType } from '@/types'
+import type { ReactNode } from 'react'
 
 interface Option {
   value: VehicleType
   label: string
-  emoji: string
+  icon: ReactNode
   description: string
 }
 
 const OPTIONS: Option[] = [
-  { value: 'jeepney', label: 'Jeepney', emoji: '🚌', description: 'Fixed route jeep' },
-  { value: 'bus',     label: 'Bus',     emoji: '🚍', description: 'City / provincial bus' },
-  { value: 'tricycle',label: 'Tricycle',emoji: '🛺', description: 'Short-distance trike' },
+  { value: 'jeepney', label: 'Jeepney', icon: <TramFront className="w-6 h-6" />, description: 'Fixed route jeep' },
+  { value: 'bus',     label: 'Bus',     icon: <Bus className="w-6 h-6" />,      description: 'City / provincial bus' },
+  { value: 'tricycle',label: 'Tricycle', icon: <Bike className="w-6 h-6" />,     description: 'Short-distance trike' },
 ]
 
 interface VehicleTypeSelectorProps {
@@ -39,15 +41,15 @@ export default function VehicleTypeSelector({
                 flex flex-col items-center gap-1.5 rounded-2xl border-2 p-3
                 text-center transition-all duration-150 cursor-pointer
                 ${active
-                  ? 'border-sky-500 bg-sky-50 ring-2 ring-sky-500/20'
+                  ? 'border-primary-500 bg-primary-50 ring-2 ring-primary-500/20'
                   : 'border-slate-200 bg-white hover:border-slate-300'}
               `}
             >
-              <span className="text-2xl">{opt.emoji}</span>
-              <span className={`text-xs font-semibold ${active ? 'text-sky-700' : 'text-slate-700'}`}>
+              <span className={active ? 'text-primary-600' : 'text-slate-500'}>{opt.icon}</span>
+              <span className={`text-xs font-semibold ${active ? 'text-primary-700' : 'text-slate-700'}`}>
                 {opt.label}
               </span>
-              <span className={`text-[10px] leading-tight ${active ? 'text-sky-500' : 'text-slate-400'}`}>
+              <span className={`text-[10px] leading-tight ${active ? 'text-primary-500' : 'text-slate-400'}`}>
                 {opt.description}
               </span>
             </button>

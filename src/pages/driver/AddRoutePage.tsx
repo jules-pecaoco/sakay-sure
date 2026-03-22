@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import AddRouteForm from "@/components/driver/AddRouteForm";
+import { ArrowLeft } from "lucide-react";
 
 export default function DriverAddRoutePage() {
   const navigate = useNavigate();
@@ -14,13 +15,7 @@ export default function DriverAddRoutePage() {
           className="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors -ml-1"
           aria-label="Go back"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-            <path
-              fillRule="evenodd"
-              d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
           <h1 className="text-lg font-bold text-slate-800">Add route</h1>

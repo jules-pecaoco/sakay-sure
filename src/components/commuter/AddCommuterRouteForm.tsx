@@ -8,6 +8,7 @@ import FormField from "@/components/common/FormField";
 import StopSearchInput from "@/components/map/StopSearchInput";
 import RouteMapPreview from "@/components/map/RouteMapPreview";
 import LocationPermissionBanner from "@/components/common/LocationPermissionBanner";
+import { Check, X, ChevronUp, ChevronDown, Megaphone, Banknote, Snowflake, AlertTriangle } from "lucide-react";
 import type { Stop, CommuterRouteTips } from "@/types";
 
 // ─── Step bar ─────────────────────────────────────────────────────────────────
@@ -26,13 +27,13 @@ function StepBar({ current }: { current: StepIndex }) {
             <div
               className={`
                 flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0
-                ${done ? "bg-sky-500 text-white" : active ? "bg-sky-100 text-sky-600 ring-2 ring-sky-500" : "bg-slate-100 text-slate-400"}
+                ${done ? "bg-primary-500 text-white" : active ? "bg-primary-100 text-primary-600 ring-2 ring-primary-500" : "bg-slate-100 text-slate-400"}
               `}
             >
-              {done ? "✓" : i + 1}
+              {done ? <Check className="w-3.5 h-3.5" /> : i + 1}
             </div>
-            <span className={`text-xs font-medium ${active ? "text-sky-600" : done ? "text-slate-500" : "text-slate-400"}`}>{label}</span>
-            {i < STEPS.length - 1 && <div className={`flex-1 h-px ${done ? "bg-sky-300" : "bg-slate-200"}`} />}
+            <span className={`text-xs font-medium ${active ? "text-primary-600" : done ? "text-slate-500" : "text-slate-400"}`}>{label}</span>
+            {i < STEPS.length - 1 && <div className={`flex-1 h-px ${done ? "bg-primary-300" : "bg-slate-200"}`} />}
           </div>
         );
       })}
@@ -66,7 +67,7 @@ function Toggle({
         onClick={() => onChange(!checked)}
         className={`
           relative w-11 h-6 rounded-full transition-colors shrink-0
-          ${checked ? "bg-sky-500" : "bg-slate-200"}
+          ${checked ? "bg-primary-500" : "bg-slate-200"}
         `}
       >
         <span
@@ -198,9 +199,11 @@ export default function AddCommuterRouteForm() {
       {/* ── Step 1: Route basics ─────────────────────────────────────────────── */}
       {step === 0 && (
         <div className="space-y-5">
-          <div className="bg-sky-50 border border-sky-200 rounded-2xl p-4">
-            <p className="text-xs font-semibold text-sky-700 mb-1">📣 Community route</p>
-            <p className="text-xs text-sky-600 leading-relaxed">
+          <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4">
+            <p className="text-xs font-semibold text-primary-700 mb-1 flex items-center gap-1.5">
+              <Megaphone className="w-3.5 h-3.5" /> Community route
+            </p>
+            <p className="text-xs text-primary-600 leading-relaxed">
               Share a route you regularly take. Other commuters will see it and can vote if it's helpful — even when no drivers are registered yet.
             </p>
           </div>
@@ -218,7 +221,7 @@ export default function AddCommuterRouteForm() {
             onClick={() => {
               if (validateStep1()) setStep(1);
             }}
-            className="w-full rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white hover:bg-sky-600 active:scale-[.98] transition-all"
+            className="w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all"
           >
             Next: Add stops →
           </button>
@@ -246,7 +249,7 @@ export default function AddCommuterRouteForm() {
                   <span
                     className={`
                       text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shrink-0
-                      ${i === 0 ? "bg-green-100 text-green-700" : i === stops.length - 1 ? "bg-red-100 text-red-600" : "bg-sky-100 text-sky-600"}
+                      ${i === 0 ? "bg-green-100 text-green-700" : i === stops.length - 1 ? "bg-red-100 text-red-600" : "bg-primary-100 text-primary-600"}
                     `}
                   >
                     {i === 0 ? "S" : i === stops.length - 1 ? "E" : i}
@@ -257,27 +260,27 @@ export default function AddCommuterRouteForm() {
                       type="button"
                       onClick={() => handleMoveStop(stop.id, "up")}
                       disabled={i === 0}
-                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25 text-xs"
+                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25"
                       aria-label="Move up"
                     >
-                      ▲
+                      <ChevronUp className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleMoveStop(stop.id, "down")}
                       disabled={i === stops.length - 1}
-                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25 text-xs"
+                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25"
                       aria-label="Move down"
                     >
-                      ▼
+                      <ChevronDown className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleRemoveStop(stop.id)}
-                      className="p-1 text-red-400 hover:text-red-600 text-xs"
+                      className="p-1 text-red-400 hover:text-red-600"
                       aria-label="Remove"
                     >
-                      ✕
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -302,7 +305,7 @@ export default function AddCommuterRouteForm() {
               onClick={() => {
                 if (validateStep2()) setStep(2);
               }}
-              className="flex-1 rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white hover:bg-sky-600 active:scale-[.98] transition-all"
+              className="flex-1 rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all"
             >
               Next: Add tips →
             </button>
@@ -335,7 +338,7 @@ export default function AddCommuterRouteForm() {
               placeholder="e.g. Flooded at Colon during rain"
               value={hazards}
               onChange={(e) => setHazards(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
             />
           </div>
 
@@ -347,20 +350,32 @@ export default function AddCommuterRouteForm() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 resize-none"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15 resize-none"
             />
           </div>
 
           {/* Summary */}
-          <div className="bg-sky-50 border border-sky-200 rounded-2xl p-4 space-y-1.5">
-            <p className="text-xs font-semibold text-sky-600 uppercase tracking-wider">Summary</p>
+          <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4 space-y-1.5">
+            <p className="text-xs font-semibold text-primary-600 uppercase tracking-wider">Summary</p>
             <p className="text-sm font-semibold text-slate-800">{name}</p>
             <p className="text-xs text-slate-500">{stops.length} stops</p>
             <div className="flex flex-wrap gap-1.5 pt-1">
-              {fare && <span className="text-xs bg-white rounded-full px-2 py-0.5 text-slate-600 border border-sky-200">₱{fare}</span>}
-              {isCashOnly && <span className="text-xs bg-white rounded-full px-2 py-0.5 text-amber-600 border border-amber-200">💵 Cash only</span>}
-              {hasAC && <span className="text-xs bg-white rounded-full px-2 py-0.5 text-sky-600 border border-sky-200">❄️ A/C</span>}
-              {hazards && <span className="text-xs bg-white rounded-full px-2 py-0.5 text-amber-700 border border-amber-200">⚠️ {hazards}</span>}
+              {fare && <span className="text-xs bg-white rounded-full px-2 py-0.5 text-slate-600 border border-primary-200">₱{fare}</span>}
+              {isCashOnly && (
+                <span className="text-xs bg-white rounded-full px-2 py-0.5 text-amber-600 border border-amber-200 inline-flex items-center gap-1">
+                  <Banknote className="w-3 h-3" /> Cash only
+                </span>
+              )}
+              {hasAC && (
+                <span className="text-xs bg-white rounded-full px-2 py-0.5 text-primary-600 border border-primary-200 inline-flex items-center gap-1">
+                  <Snowflake className="w-3 h-3" /> A/C
+                </span>
+              )}
+              {hazards && (
+                <span className="text-xs bg-white rounded-full px-2 py-0.5 text-amber-700 border border-amber-200 inline-flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> {hazards}
+                </span>
+              )}
             </div>
           </div>
 
@@ -378,7 +393,7 @@ export default function AddCommuterRouteForm() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 rounded-xl bg-sky-500 py-3.5 text-sm font-semibold text-white hover:bg-sky-600 active:scale-[.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+              className="flex-1 rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
@@ -386,7 +401,9 @@ export default function AddCommuterRouteForm() {
                   Sharing…
                 </>
               ) : (
-                "Share route ✓"
+                <>
+                  <Check className="w-4 h-4" /> Share route
+                </>
               )}
             </button>
           </div>
