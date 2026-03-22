@@ -1,4 +1,4 @@
-import { Navigation } from 'lucide-react'
+import logo from '@/assets/sakay_sure_logo.png'
 import type { ReactNode } from 'react'
 
 interface AuthLayoutProps {
@@ -11,8 +11,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* Header — Jeepney Bold Style */}
       <header className="px-6 pt-12 pb-8 flex flex-col items-center bg-primary-500 clip-bottom-slant">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-lg bg-ink flex items-center justify-center shadow-lg border border-accent-500/20">
-            <Navigation className="w-6 h-6 text-accent-500" fill="currentColor" />
+          <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg border border-accent-500/20 overflow-hidden">
+            <img src={logo} alt="Sakay Sure Logo" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-3xl font-display uppercase tracking-tight text-white leading-none">
             Sakay<span className="text-accent-500">Sure</span>
