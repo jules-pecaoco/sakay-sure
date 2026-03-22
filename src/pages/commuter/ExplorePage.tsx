@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useAllRoutes } from "@/hooks/useAllRoutes";
+import { useUserLocation } from "@/hooks/useUserLocation";
 import RouteTypeToggle, { type RouteFilter } from "@/components/routes/RouteTypeToggle";
 import { DriverRouteCard, CommuterRouteCard } from "@/components/routes/RouteCard";
+import LocationPermissionBanner from "@/components/common/LocationPermissionBanner";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { MapIcon, Search } from "lucide-react";
 
@@ -14,6 +16,7 @@ const DEFAULT_CENTER: [number, number] = [123.8854, 10.3157];
 
 export default function ExplorePage() {
   const { driverRoutes, commuterRoutes, activeDrivers, loading } = useAllRoutes();
+  const { location: userLocation, status: locationStatus, request: requestLocation } = useUserLocation();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<RouteFilter>("all");
   const [search, setSearch] = useState("");
@@ -29,21 +32,29 @@ export default function ExplorePage() {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: DEFAULT_CENTER,
-      zoom: 12,
+      center: userLocation ? [userLocation.lng, userLocation.lat] : DEFAULT_CENTER,
+      zoom: userLocation ? 14 : 12,
       attributionControl: false,
     });
     map.addControl(new mapboxgl.AttributionControl({ compact: true }));
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
+    map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: { enableHighAccuracy: true },
+        trackUserLocation: true,
+        showUserHeading: true,
+      }),
+      "bottom-right"
+    );
     mapRef.current = map;
 
     map.on("load", () => {
-      // Add route line sources for all driver routes
+      // 1. Add Driver Routes
       driverRoutes.forEach((route) => {
         if (!route.geometry) return;
         const sourceId = `route-${route.id}`;
         if (map.getSource(sourceId)) return;
-        map.addSource(sourceId, { type: "geojson", data: { type: "Feature", properties: {}, geometry: route.geometry } });
+        map.addSource(sourceId, { type: "geojson", data: { type: "Feature", properties: { id: route.id, name: route.name, type: 'driver' }, geometry: route.geometry } });
         map.addLayer({
           id: sourceId,
           type: "line",
@@ -51,10 +62,93 @@ export default function ExplorePage() {
           layout: { "line-join": "round", "line-cap": "round" },
           paint: {
             "line-color": route.isActive ? "#22c55e" : "#000000",
-            "line-width": 3,
-            "line-opacity": 0.75,
+            "line-width": 4,
+            "line-opacity": 0.7,
           },
         });
+
+        // Add start marker for driver route
+        const startPos = route.stops[0].coordinates;
+        const el = document.createElement('div');
+        el.className = 'w-4 h-4 rounded-full border-2 border-white shadow-sm cursor-pointer';
+        el.style.backgroundColor = route.isActive ? '#22c55e' : '#000000';
+        new mapboxgl.Marker({ element: el })
+          .setLngLat([startPos.lng, startPos.lat])
+          .setPopup(new mapboxgl.Popup({ offset: 10 }).setHTML(`
+            <div class="p-2 min-w-30">
+              <p class="text-xs font-bold text-slate-800">${route.name}</p>
+              <p class="text-[10px] text-slate-500 mb-2">Driver Route</p>
+              <a href="/predict?routeId=${route.id}&type=driver" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
+            </div>
+          `))
+          .addTo(map);
+
+        // Click handler for line
+        map.on('click', sourceId, (e) => {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div class="p-2 min-w-30">
+                <p class="text-xs font-bold text-slate-800">${route.name}</p>
+                <p class="text-[10px] text-slate-500 mb-2">Driver Route</p>
+                <a href="/predict?routeId=${route.id}&type=driver" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
+              </div>
+            `)
+            .addTo(map);
+        });
+        map.on('mouseenter', sourceId, () => map.getCanvas().style.cursor = 'pointer');
+        map.on('mouseleave', sourceId, () => map.getCanvas().style.cursor = '');
+      });
+
+      // 2. Add Community Routes
+      commuterRoutes.forEach((route) => {
+        if (!route.geometry) return;
+        const sourceId = `route-${route.id}`;
+        if (map.getSource(sourceId)) return;
+        map.addSource(sourceId, { type: "geojson", data: { type: "Feature", properties: { id: route.id, name: route.name, type: 'commuter' }, geometry: route.geometry } });
+        map.addLayer({
+          id: sourceId,
+          type: "line",
+          source: sourceId,
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: {
+            "line-color": "#9333ea", // Brand accent purple
+            "line-width": 4,
+            "line-opacity": 0.7,
+          },
+        });
+
+        // Add start marker for community route
+        const startPos = route.stops[0].coordinates;
+        const el = document.createElement('div');
+        el.className = 'w-4 h-4 rounded-full border-2 border-white shadow-sm cursor-pointer';
+        el.style.backgroundColor = '#9333ea';
+        new mapboxgl.Marker({ element: el })
+          .setLngLat([startPos.lng, startPos.lat])
+          .setPopup(new mapboxgl.Popup({ offset: 10 }).setHTML(`
+            <div class="p-2 min-w-30">
+              <p class="text-xs font-bold text-slate-800">${route.name}</p>
+              <p class="text-[10px] text-slate-500 mb-2">Community Route</p>
+              <a href="/predict?routeId=${route.id}&type=commuter" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
+            </div>
+          `))
+          .addTo(map);
+
+        // Click handler for line
+        map.on('click', sourceId, (e) => {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div class="p-2 min-w-30">
+                <p class="text-xs font-bold text-slate-800">${route.name}</p>
+                <p class="text-[10px] text-slate-500 mb-2">Community Route</p>
+                <a href="/predict?routeId=${route.id}&type=commuter" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
+              </div>
+            `)
+            .addTo(map);
+        });
+        map.on('mouseenter', sourceId, () => map.getCanvas().style.cursor = 'pointer');
+        map.on('mouseleave', sourceId, () => map.getCanvas().style.cursor = '');
       });
     });
 
@@ -137,7 +231,23 @@ export default function ExplorePage() {
       </div>
 
       {/* Map */}
-      {showMap && <div ref={mapContainerRef} className="h-56 w-full" />}
+      {showMap && (
+        <div className="space-y-3 px-4 pb-1">
+          <LocationPermissionBanner status={locationStatus} onRequest={requestLocation} />
+          
+          <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-slate-200">
+            <div ref={mapContainerRef} className="h-full w-full" />
+            
+            {/* Legend Overlay */}
+            <div className="absolute top-2 left-2 bg-white/95 backdrop-blur shadow-lg border border-slate-200 rounded-xl p-2.5 z-10 space-y-2 pointer-events-none">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Legend</h3>
+              <LegendItem color="#22c55e" label="Active Driver" />
+              <LegendItem color="#000000" label="Scheduled/Inactive" />
+              <LegendItem color="#9333ea" label="Community Shared" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Route list */}
       <div className="px-4 py-4 space-y-3 max-w-lg mx-auto">
@@ -177,4 +287,15 @@ export default function ExplorePage() {
       </div>
     </div>
   );
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function LegendItem({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+      <span className="text-[10px] font-medium text-slate-700">{label}</span>
+    </div>
+  )
 }
