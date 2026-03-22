@@ -26,25 +26,25 @@ export default function PredictionCard({ prediction, routeName }: PredictionCard
       )}
 
       <div className="grid grid-cols-2 gap-[1.5px] bg-ink/10 mt-4 border-y-[1.5px] border-ink/10">
-        <MetricTile 
-          icon={<Timer className="w-4 h-4" strokeWidth={2.5} />} 
-          label="ETA Window" 
-          value={`${etaRange.min}–${etaRange.max} min`} 
-          sub="Estimated Arrival" 
-          highlight={isRushHour} 
+        <MetricTile
+          icon={<Timer className="w-4 h-4" strokeWidth={2.5} />}
+          label="ETA Window"
+          value={`${etaRange.min}–${etaRange.max} min`}
+          sub="Estimated Arrival"
+          highlight={isRushHour}
         />
-        <MetricTile 
-          icon={<TramFront className="w-4 h-4" strokeWidth={2.5} />} 
-          label="Vehicles Near" 
-          value={`${vehicleRange.min}–${vehicleRange.max}`} 
-          sub="Next 30 Mins" 
+        <MetricTile
+          icon={<TramFront className="w-4 h-4" strokeWidth={2.5} />}
+          label="Vehicles Near"
+          value={`${vehicleRange.min}–${vehicleRange.max}`}
+          sub="Next 30 Mins"
         />
-        <MetricTile 
-          icon={<Clock className="w-4 h-4" strokeWidth={2.5} />} 
-          label="Off-Peak Window" 
-          value={`${bestTimeWindow.from} – ${bestTimeWindow.to}`} 
-          sub="Best Time To Leave" 
-          colSpan 
+        <MetricTile
+          icon={<Clock className="w-4 h-4" strokeWidth={2.5} />}
+          label="Off-Peak Window"
+          value={`${bestTimeWindow.from} – ${bestTimeWindow.to}`}
+          sub="Best Time To Leave"
+          colSpan
         />
       </div>
 
@@ -74,11 +74,9 @@ function MetricTile({
     <div className={`bg-white px-5 py-4 flex flex-col gap-1.5 ${colSpan ? "col-span-2" : ""}`}>
       <div className="flex items-center gap-2">
         <span className="text-primary-500">{icon}</span>
-        <span className="section-label !text-muted">{label}</span>
+        <span className="section-label text-muted!">{label}</span>
       </div>
-      <p className={`text-2xl font-display uppercase tracking-tighter leading-none ${highlight ? "text-primary-500" : "text-ink"}`}>
-        {value}
-      </p>
+      <p className={`text-2xl font-display uppercase tracking-tighter leading-none ${highlight ? "text-primary-500" : "text-ink"}`}>{value}</p>
       <p className="text-[10px] font-bold text-muted uppercase tracking-tight">{sub}</p>
     </div>
   );
