@@ -1,25 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-
 interface TopBarProps {
   title: string;
-  showBack?: boolean;
-  onBack?: () => void;
   rightElement?: React.ReactNode;
   transparent?: boolean;
 }
 
-export default function TopBar({ title, showBack = true, onBack, rightElement, transparent = false }: TopBarProps) {
-  const navigate = useNavigate();
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate(-1);
-    }
-  };
-
+export default function TopBar({ title, rightElement, transparent = false }: TopBarProps) {
   return (
     <header
       className={`
