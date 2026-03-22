@@ -97,17 +97,22 @@ export default function ExplorePage() {
 
         // Click handler
         map.on("click", sourceId, (e) => {
+          const popupNode = document.createElement("div");
+          popupNode.className = "p-2 min-w-30";
+          popupNode.innerHTML = `
+            <p class="text-xs font-display text-ink uppercase tracking-tight">${route.name}</p>
+            <p class="text-[9px] font-bold text-muted mb-2 tracking-widest uppercase">${type === "driver" ? "Driver" : "Community"} Route</p>
+          `;
+          
+          const btn = document.createElement("button");
+          btn.className = "text-[10px] font-bold text-primary-500 hover:underline cursor-pointer transition-colors block text-left border-none bg-transparent p-0";
+          btn.textContent = "View details";
+          btn.onclick = () => navigate(`/predict?routeId=${route.id}&type=${type}`);
+          popupNode.appendChild(btn);
+
           new mapboxgl.Popup()
             .setLngLat(e.lngLat)
-            .setHTML(
-              `
-              <div class="p-2 min-w-30">
-                <p class="text-xs font-display text-ink uppercase tracking-tight">${route.name}</p>
-                <p class="text-[9px] font-bold text-muted mb-2 tracking-widest uppercase">${type === "driver" ? "Driver" : "Community"} Route</p>
-                <a href="/predict?routeId=${route.id}&type=${type}" class="text-[10px] font-bold text-primary-500 hover:underline">View details</a>
-              </div>
-            `,
-            )
+            .setDOMContent(popupNode)
             .addTo(map);
         });
 
@@ -130,16 +135,23 @@ export default function ExplorePage() {
         el.style.backgroundColor = type === "driver" ? (route.isActive ? "#E8321A" : "#1A1208") : "#FFD84D";
         el.dataset.routeId = route.id; // Store ID for lookup
 
+        const popupNode = document.createElement("div");
+        popupNode.className = "p-2 min-w-30";
+        popupNode.innerHTML = `
+          <p class="text-xs font-display text-ink uppercase tracking-tight">${route.name}</p>
+          <p class="text-[9px] font-bold text-muted mb-2 tracking-widest uppercase">${type === "driver" ? "Driver" : "Community"} Route</p>
+        `;
+        
+        const btn = document.createElement("button");
+        btn.className = "text-[10px] font-bold text-primary-500 hover:underline cursor-pointer transition-colors block text-left border-none bg-transparent p-0";
+        btn.textContent = "View details";
+        btn.onclick = () => navigate(`/predict?routeId=${route.id}&type=${type}`);
+        popupNode.appendChild(btn);
+
         new mapboxgl.Marker({ element: el })
           .setLngLat([startPos.lng, startPos.lat])
           .setPopup(
-            new mapboxgl.Popup({ offset: 10 }).setHTML(`
-            <div class="p-2 min-w-30">
-              <p class="text-xs font-display text-ink uppercase tracking-tight">${route.name}</p>
-              <p class="text-[9px] font-bold text-muted mb-2 tracking-widest uppercase">${type === "driver" ? "Driver" : "Community"} Route</p>
-              <a href="/predict?routeId=${route.id}&type=${type}" class="text-[10px] font-bold text-primary-500 hover:underline">View details</a>
-            </div>
-          `),
+            new mapboxgl.Popup({ offset: 10 }).setDOMContent(popupNode)
           )
           .addTo(map);
       } else {
