@@ -10,7 +10,8 @@ import PricingFields from './PricingFields'
 import StopSearchInput from '@/components/map/StopSearchInput'
 import RouteMapPreview from '@/components/map/RouteMapPreview'
 import LocationPermissionBanner from '@/components/common/LocationPermissionBanner'
-import { Check, X, ChevronUp, ChevronDown, Navigation, Clock, CreditCard } from 'lucide-react'
+import { Check, X, ChevronUp, ChevronDown, Navigation, Clock, CreditCard, MapPin } from 'lucide-react'
+import { reverseGeocode } from '@/services/mapbox/geocoder'
 import type { VehicleType, Stop, DriverPricing } from '@/types'
 
 const STEPS = ['Details', 'Stops', 'Schedule'] as const
@@ -34,7 +35,7 @@ function StepBar({ current }: { current: StepIndex }) {
               {label}
             </span>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-[2px] rounded-full mx-1 ${done ? 'bg-primary-500' : 'bg-slate-200'}`} />
+              <div className={`flex-1 h-0.5 rounded-full mx-1 ${done ? 'bg-primary-500' : 'bg-slate-200'}`} />
             )}
           </div>
         )
@@ -61,6 +62,8 @@ export default function AddRouteForm() {
   const [geometry, setGeometry] = useState<GeoJSON.LineString | null>(null)
   const [stopError, setStopError] = useState<string | null>(null)
   const [fetchingGeometry, setFetchingGeometry] = useState(false)
+  const [pendingPin, setPendingPin] = useState<{lng: number, lat: number} | null>(null)
+  const [isResolvingPin, setIsResolvingPin] = useState(false)
 
   // Step 3
   const [startTime, setStartTime] = useState('06:00')
@@ -87,6 +90,22 @@ export default function AddRouteForm() {
       const geo = await fetchRouteGeometry(newStops.map((s) => s.coordinates))
       setGeometry(geo)
       setFetchingGeometry(false)
+    }
+  }
+
+  function handleMapClick(lngLat: { lng: number; lat: number }) {
+    setPendingPin(lngLat)
+  }
+
+  async function confirmPin() {
+    if (!pendingPin) return
+    setIsResolvingPin(true)
+    try {
+      const placeName = await reverseGeocode(pendingPin.lng, pendingPin.lat)
+      await handleAddStop({ name: placeName, coordinates: pendingPin })
+    } finally {
+      setIsResolvingPin(false)
+      setPendingPin(null)
     }
   }
 
@@ -171,7 +190,7 @@ export default function AddRouteForm() {
             onClick={() => { if (validateStep1()) setStep(1) }}
             className="
               w-full rounded-xl bg-primary-500 py-4 text-[12px] font-display uppercase tracking-widest text-white
-              border-b-[4px] border-primary-700 shadow-md transition-all mt-4
+              border-b-4 border-primary-700 shadow-md transition-all mt-4
               hover:bg-primary-600 active:border-b-0 active:translate-y-1 active:shadow-none
             "
           >
@@ -235,8 +254,46 @@ export default function AddRouteForm() {
           )}
 
           <div className="border-[2.5px] border-ink rounded-xl overflow-hidden shadow-md">
-            <RouteMapPreview stops={stops} geometry={geometry} userLocation={userLocation} className="h-60" />
+            <RouteMapPreview stops={stops} geometry={geometry} userLocation={userLocation} className="h-60" interactive={true} onMapClick={handleMapClick} />
           </div>
+
+          {pendingPin && (
+            <div className="fixed inset-0 z-100 flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+              <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl space-y-5 animate-in zoom-in-95 duration-200">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+                      <MapPin className="w-5 h-5 text-primary-600" />
+                   </div>
+                   <h3 className="text-xl font-display text-ink uppercase tracking-tight leading-none">Add this stop?</h3>
+                 </div>
+                 <p className="text-sm font-medium text-slate-600 leading-relaxed">
+                   Are you sure you want to add this location as a stop? Is this pin another stop/place where people commonly disembark?
+                 </p>
+                 <div className="flex gap-3 pt-2">
+                   <button
+                      type="button"
+                      disabled={isResolvingPin}
+                      onClick={() => setPendingPin(null)}
+                      className="flex-1 py-3.5 rounded-xl border-[1.5px] border-slate-200 text-[11px] font-display uppercase tracking-widest text-muted hover:bg-slate-50 hover:text-ink transition-all"
+                   >
+                      Cancel
+                   </button>
+                   <button
+                      type="button"
+                      disabled={isResolvingPin}
+                      onClick={confirmPin}
+                      className="flex-1 bg-primary-500 py-3.5 rounded-xl text-[11px] font-display uppercase tracking-widest text-white shadow-md border-b-[4px] border-primary-700 active:border-b-0 active:translate-y-1 active:shadow-none transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                   >
+                      {isResolvingPin ? (
+                        <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        "Yes, add stop"
+                      )}
+                   </button>
+                 </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-4">
             <button type="button" onClick={() => setStep(0)}
@@ -246,7 +303,7 @@ export default function AddRouteForm() {
             <button type="button" onClick={() => { if (validateStep2()) setStep(2) }}
               className="
                 flex-1 rounded-xl bg-ink py-4 text-[11px] font-display uppercase tracking-widest text-white shadow-md
-                border-b-[4px] border-slate-700 active:border-b-0 active:translate-y-1 active:shadow-none transition-all
+                border-b-4 border-slate-700 active:border-b-0 active:translate-y-1 active:shadow-none transition-all
               ">
               Sunod
             </button>
@@ -275,8 +332,8 @@ export default function AddRouteForm() {
           </div>
 
           {/* Summary Signboard */}
-          <div className="bg-accent-500 border-[2px] border-ink rounded-xl p-5 space-y-4 shadow-[6px_6px_0px_0px_rgba(26,18,8,0.05)]">
-            <p className="section-label !text-ink !font-display">Route Signboard Summary</p>
+          <div className="bg-accent-500 border-2 border-ink rounded-xl p-5 space-y-4 shadow-[6px_6px_0px_0px_rgba(26,18,8,0.05)]">
+            <p className="section-label text-ink! font-display!">Route Signboard Summary</p>
             <div className="space-y-3">
                <h3 className="text-2xl font-display text-ink uppercase tracking-tight leading-tight">{name}</h3>
                <div className="flex flex-wrap gap-2">
@@ -299,7 +356,7 @@ export default function AddRouteForm() {
             <button type="button" onClick={handleSubmit} disabled={submitting}
               className="
                 flex-1 rounded-xl bg-primary-500 py-4 text-[11px] font-display uppercase tracking-widest text-white shadow-md
-                border-b-[4px] border-primary-700 active:border-b-0 active:translate-y-1 active:shadow-none transition-all
+                border-b-4 border-primary-700 active:border-b-0 active:translate-y-1 active:shadow-none transition-all
                 disabled:opacity-60 flex items-center justify-center gap-2
               ">
               {submitting ? (
