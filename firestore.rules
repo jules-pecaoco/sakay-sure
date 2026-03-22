@@ -1,0 +1,87 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isDriver() {
+      return isSignedIn() && getUserRole() == 'driver';
+    }
+
+    function isCommuter() {
+      return isSignedIn() && getUserRole() == 'commuter';
+    }
+
+    // ── Users ─────────────────────────────────────────────────────────────────
+    // Users can read/write only their own profile document.
+
+    match /users/{uid} {
+      allow read:   if isSignedIn() && isOwner(uid);
+      allow create: if isSignedIn() && isOwner(uid);
+      allow update: if isSignedIn() && isOwner(uid);
+      allow delete: if false;
+    }
+
+    // ── Driver Routes ─────────────────────────────────────────────────────────
+    // Anyone signed in can read. Only the owning driver can write.
+
+    match /driverRoutes/{routeId} {
+      allow read:   if isSignedIn();
+      allow create: if isDriver() && request.resource.data.driverId == request.auth.uid;
+      allow update: if isDriver() && resource.data.driverId == request.auth.uid;
+      allow delete: if isDriver() && resource.data.driverId == request.auth.uid;
+    }
+
+    // ── Commuter Routes ───────────────────────────────────────────────────────
+    // Anyone signed in can read. Only commuters can create.
+    // Authors can edit their own; anyone signed in can update vote counters.
+
+    match /commuterRoutes/{routeId} {
+      allow read:   if isSignedIn();
+      allow create: if isCommuter() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        // Author can update everything
+        resource.data.authorId == request.auth.uid
+        ||
+        // Any signed-in user can increment/decrement vote counters only
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['helpfulVotes', 'notHelpfulVotes', 'updatedAt'])
+      );
+      allow delete: if isCommuter() && resource.data.authorId == request.auth.uid;
+    }
+
+    // ── Active Drivers ────────────────────────────────────────────────────────
+    // Anyone signed in can read (for the map).
+    // Only the owning driver can write their own presence doc.
+
+    match /activeDrivers/{driverId} {
+      allow read:   if isSignedIn();
+      allow write:  if isDriver() && isOwner(driverId);
+    }
+
+    // ── Votes ─────────────────────────────────────────────────────────────────
+    // Users can read and write only their own vote documents.
+
+    match /votes/{voteId} {
+      // voteId format is "{userId}_{routeId}" — use prefix check so reads
+      // work even when the document doesn't exist yet (resource.data is null).
+      allow read:   if isSignedIn() && voteId[0:request.auth.uid.size()] == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}
