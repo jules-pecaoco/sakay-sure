@@ -1,6 +1,8 @@
+import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAllRoutes } from "@/hooks/useAllRoutes";
 import { runPrediction } from "@/engine";
+import { fetchRouteDuration } from "@/services/mapbox/directions";
 import PredictionCard from "@/components/predictions/PredictionCard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import RouteMapPreview from "@/components/map/RouteMapPreview";
@@ -20,18 +22,46 @@ export default function PredictPage() {
   const selectedCommuter = routeType === "commuter" ? commuterRoutes.find((r) => r.id === routeId) : null;
   const selectedRoute = selectedDriver ?? selectedCommuter;
 
-  // Run prediction for the selected route
-  const prediction = selectedRoute
-    ? runPrediction({
-        driverRoutes: selectedDriver ? driverRoutes.filter((r) => r.id === routeId) : [],
-        activeDriverRoutes: selectedDriver
-          ? activeDrivers
-              .filter((a) => a.routeId === routeId)
-              .map((a) => driverRoutes.find((r) => r.id === a.routeId))
-              .filter((r): r is NonNullable<typeof r> => !!r)
-          : [],
-        commuterRoutes: selectedCommuter ? commuterRoutes.filter((r) => r.id === routeId) : commuterRoutes,
-      })
+  // Base prediction from synchronously checking engine
+  const basePrediction = useMemo(() => {
+    if (!selectedRoute) return null;
+    return runPrediction({
+      driverRoutes: selectedDriver ? driverRoutes.filter((r) => r.id === routeId) : [],
+      activeDriverRoutes: selectedDriver
+        ? activeDrivers
+            .filter((a) => a.routeId === routeId)
+            .map((a) => driverRoutes.find((r) => r.id === a.routeId))
+            .filter((r): r is NonNullable<typeof r> => !!r)
+        : [],
+      commuterRoutes: selectedCommuter ? commuterRoutes.filter((r) => r.id === routeId) : commuterRoutes,
+    });
+  }, [selectedRoute, selectedDriver, selectedCommuter, driverRoutes, commuterRoutes, activeDrivers, routeId]);
+
+  const [liveDuration, setLiveDuration] = useState<{ min: number; max: number } | null>(null);
+
+  useEffect(() => {
+    setLiveDuration(null);
+    if (!selectedRoute || selectedRoute.stops.length < 2) return;
+
+    let canceled = false;
+    const coords = selectedRoute.stops.map((s) => s.coordinates);
+    
+    fetchRouteDuration(coords).then((durationMinutes) => {
+      if (!canceled && durationMinutes !== null) {
+        const maxDuration = Math.max(durationMinutes + 2, Math.round(durationMinutes * 1.2));
+        setLiveDuration({ min: durationMinutes, max: maxDuration });
+      }
+    });
+
+    return () => {
+      canceled = true;
+    };
+  }, [selectedRoute]);
+
+  const prediction = basePrediction
+    ? liveDuration
+      ? { ...basePrediction, etaRange: liveDuration }
+      : basePrediction
     : null;
 
   const stops = selectedRoute?.stops ?? [];
@@ -51,7 +81,7 @@ export default function PredictPage() {
         ) : (
           <>
             {/* Prediction card */}
-            {prediction && <PredictionCard prediction={prediction} routeName={selectedRoute.name} />}
+            {prediction && <PredictionCard prediction={prediction} routeName={selectedRoute.name} stops={stops} />}
 
             {/* Voting Component for Commuter Routes */}
             {routeType === "commuter" && selectedCommuter && (
@@ -68,7 +98,7 @@ export default function PredictPage() {
             {stops.length > 0 && (
               <div className="space-y-3">
                 <p className="section-label pl-1">Route Map View</p>
-                <div className="border-[2px] border-ink rounded-xl overflow-hidden shadow-md">
+                <div className="border-2 border-ink rounded-xl overflow-hidden shadow-md">
                   <RouteMapPreview stops={stops} geometry={geometry} className="h-60" />
                 </div>
               </div>

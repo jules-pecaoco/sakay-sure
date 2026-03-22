@@ -29,9 +29,30 @@ export function runPrediction(ctx: PredictionContext): PredictionResult {
     max: Math.max(2, Math.round(layer2.etaRange.max * layer3.etaAdjustment)),
   };
 
+  // Calculate highly accurate vehicles near based on real data
+  const driverMin = ctx.activeDriverRoutes.length;
+  let driverMax = Math.max(driverMin, ctx.driverRoutes.length);
+
+  // Using registered community routes as a gauge of total unregulated rides
+  const commuterMin = Math.round(ctx.commuterRoutes.length * 0.5);
+  const commuterMax = ctx.commuterRoutes.length;
+
+  let finalVehiclesMin = driverMin + commuterMin;
+  let finalVehiclesMax = driverMax + commuterMax;
+
+  // Only fallback to mock layer1 data if absolutely nothing exists
+  if (ctx.driverRoutes.length === 0 && ctx.commuterRoutes.length === 0) {
+    finalVehiclesMin = layer1.vehicleRange.min;
+    finalVehiclesMax = layer1.vehicleRange.max;
+  } else if (finalVehiclesMax === 0) {
+    // Found routes, but zero drivers are online/visible right now
+    // Fallback to max potential based on time of day
+    finalVehiclesMax = layer1.vehicleRange.min;
+  }
+
   const finalVehicles = {
-    min: layer2.vehicleRange.min + layer3.vehicleBoost,
-    max: layer2.vehicleRange.max + layer3.vehicleBoost,
+    min: finalVehiclesMin,
+    max: Math.max(finalVehiclesMin + 1, finalVehiclesMax),
   };
 
   const { level, layersUsed } = scoreConfidence({
