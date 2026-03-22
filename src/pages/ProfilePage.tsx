@@ -28,7 +28,6 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-surface">
       <TopBar 
         title="ProfileSure" 
-        showBack={false}
       />
 
       <div className="px-4 py-6 space-y-5 max-w-lg mx-auto">

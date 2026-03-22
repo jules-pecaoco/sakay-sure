@@ -192,7 +192,6 @@ export default function ExplorePage() {
     <div className="min-h-screen bg-surface">
       <TopBar
         title="ExploreSure"
-        showBack={false}
         rightElement={
           <button
             type="button"

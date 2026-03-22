@@ -18,7 +18,6 @@ export default function DriverHomePage() {
     <div className="min-h-screen bg-surface">
       <TopBar 
         title="PredictSure" 
-        showBack={false}
         rightElement={
           <div className="flex items-center gap-2">
             <span

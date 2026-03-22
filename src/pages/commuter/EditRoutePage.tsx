@@ -162,7 +162,6 @@ export default function EditCommuterRoutePage() {
     <div className="min-h-screen bg-surface">
       <TopBar 
         title="Edit Guide" 
-        onBack={() => navigate("/explore")}
       />
 
       <div className="px-4 py-5 max-w-lg mx-auto space-y-5">
