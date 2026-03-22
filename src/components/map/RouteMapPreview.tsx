@@ -11,6 +11,8 @@ interface RouteMapPreviewProps {
   className?: string
   /** If provided and no stops yet, center and zoom the map here */
   userLocation?: { lng: number; lat: number } | null
+  interactive?: boolean
+  onMapClick?: (lngLat: { lng: number; lat: number }) => void
 }
 
 const DEFAULT_CENTER: [number, number] = [123.8854, 10.3157]
@@ -21,6 +23,8 @@ export default function RouteMapPreview({
   geometry,
   className = 'h-48 rounded-2xl overflow-hidden',
   userLocation,
+  interactive = false,
+  onMapClick,
 }: RouteMapPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef        = useRef<mapboxgl.Map | null>(null)
@@ -41,8 +45,9 @@ export default function RouteMapPreview({
       style: 'mapbox://styles/mapbox/streets-v12',
       center: initialCenter,
       zoom: userLocation ? 14 : DEFAULT_ZOOM,
-      interactive: false,
+      interactive: interactive,
       attributionControl: false,
+      cooperativeGestures: interactive, // require two fingers to pan on mobile
     })
 
     map.addControl(new mapboxgl.AttributionControl({ compact: true }))
@@ -69,13 +74,24 @@ export default function RouteMapPreview({
       }
     })
 
+    if (onMapClick) {
+      map.on('click', (e) => {
+        // Only trigger if we click on the map surface, not on a marker if we had marker click events,
+        // mapboxgl markers capture their own events by default, so map click won't fire.
+        // Convert mapboxgl.LngLat to a plain JS object to avoid Firebase serialization errors
+        onMapClick({ lng: e.lngLat.lng, lat: e.lngLat.lat })
+      })
+      // Change cursor to make it look clickable
+      map.getCanvas().style.cursor = 'crosshair'
+    }
+
     return () => {
       styleLoadedRef.current = false
       map.remove()
       mapRef.current = null
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [interactive, onMapClick]) // Re-run if these props change, though normally they are static 
 
   // ── Fly to user location when it arrives (only if no stops yet) ───────────────
   useEffect(() => {

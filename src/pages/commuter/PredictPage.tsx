@@ -99,7 +99,7 @@ export default function PredictPage() {
               <div className="space-y-3">
                 <p className="section-label pl-1">Route Map View</p>
                 <div className="border-2 border-ink rounded-xl overflow-hidden shadow-md">
-                  <RouteMapPreview stops={stops} geometry={geometry} className="h-60" />
+                  <RouteMapPreview stops={stops} geometry={geometry} className="h-60" interactive={true} />
                 </div>
               </div>
             )}
