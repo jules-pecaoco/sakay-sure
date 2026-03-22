@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -7,7 +8,7 @@
   --color-primary-200: #fecaca;
   --color-primary-300: #fca5a5;
   --color-primary-400: #f87171;
-  --color-primary-500: #E8321A; /* Primary Red */
+  --color-primary-500: #e8321a; /* Primary Red */
   --color-primary-600: #dc2626;
   --color-primary-700: #b91c1c;
 
@@ -16,14 +17,14 @@
   --color-accent-200: #fde68a;
   --color-accent-300: #fcd34d;
   --color-accent-400: #fbbf24;
-  --color-accent-500: #FFD84D; /* Accent Yellow */
+  --color-accent-500: #ffd84d; /* Accent Yellow */
   --color-accent-600: #d97706;
 
   /* Semantic Interface Tokens */
-  --color-surface: #F5F0E8;   /* Warm Cream */
-  --color-ink: #1A1208;       /* Dark Ink */
-  --color-card: #FFFFFF;      /* White */
-  --color-muted: #888888;     /* Muted Text */
+  --color-surface: #f5f0e8; /* Warm Cream */
+  --color-ink: #1a1208; /* Dark Ink */
+  --color-card: #ffffff; /* White */
+  --color-muted: #888888; /* Muted Text */
 
   /* Override radius for "Jeepney Bold" aesthetic (no pills) */
   --radius-xl: 10px;
@@ -34,17 +35,20 @@
 
 /* Custom Base Styles */
 @layer base {
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap');
 
   body {
     background-color: var(--color-surface);
     color: var(--color-ink);
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4, .font-display {
-    font-family: 'Syne', sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: "Syne", sans-serif;
     font-weight: 800;
   }
 
@@ -60,7 +64,7 @@
   /* Flat Card Utility */
   .card-flat {
     background-color: var(--color-white);
-    border: 1.5px solid #E2E8F0; /* Slate-200 default border */
+    border: 1.5px solid #e2e8f0; /* Slate-200 default border */
     border-radius: var(--radius-lg);
   }
 }

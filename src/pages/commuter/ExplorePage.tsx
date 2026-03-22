@@ -26,6 +26,7 @@ export default function ExplorePage() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // ── Init map ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -48,11 +49,17 @@ export default function ExplorePage() {
       }),
       "bottom-right",
     );
+    
+    map.on("load", () => {
+      setMapLoaded(true);
+    });
+
     mapRef.current = map;
 
     return () => {
       map.remove();
       mapRef.current = null;
+      setMapLoaded(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showMap]);
@@ -60,7 +67,7 @@ export default function ExplorePage() {
   // ── Sync Routes to Map ───────────────────────────────────────────────────
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !showMap) return;
+    if (!map || !showMap || !mapLoaded) return;
 
     const addRouteLayer = (route: any, type: "driver" | "commuter", index: number) => {
       if (!route.geometry) return;
@@ -149,13 +156,13 @@ export default function ExplorePage() {
 
     driverRoutes.forEach((r, i) => addRouteLayer(r, "driver", i));
     commuterRoutes.forEach((r, i) => addRouteLayer(r, "commuter", i));
-  }, [driverRoutes, commuterRoutes, filter, showMap]);
+  }, [driverRoutes, commuterRoutes, filter, showMap, mapLoaded]);
 
 
   // ── Update active driver markers ──────────────────────────────────────────
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !showMap) return;
+    if (!map || !showMap || !mapLoaded) return;
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
@@ -171,7 +178,7 @@ export default function ExplorePage() {
       const marker = new mapboxgl.Marker({ element: el }).setLngLat([driver.position.lng, driver.position.lat]).addTo(map);
       markersRef.current.push(marker);
     });
-  }, [activeDrivers, showMap]);
+  }, [activeDrivers, showMap, mapLoaded]);
 
   // ── Filtered routes ───────────────────────────────────────────────────────
   const filteredDriverRoutes = driverRoutes.filter((r) => {
