@@ -45,10 +45,8 @@ export default function LoginForm() {
     setErrors({})
     try {
       await signIn(email.trim(), password)
-      // Navigation handled by router after auth state change
     } catch (err: unknown) {
-      const code =
-        (err as { code?: string }).code ?? 'auth/unknown'
+      const code = (err as { code?: string }).code ?? 'auth/unknown'
       setErrors(mapFirebaseError(code))
     } finally {
       setLoading(false)
@@ -56,46 +54,51 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
       <div className="space-y-1 mb-2">
-        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-          Welcome back
-        </h1>
-        <p className="text-sm text-slate-500">Sign in to continue</p>
+        <h2 className="text-2xl font-display text-ink uppercase tracking-tight">
+          Welcome Back<span className="text-primary-500">!</span>
+        </h2>
+        <p className="text-xs font-medium text-muted uppercase tracking-wider">
+           Sign in to your SakaySure account
+        </p>
       </div>
 
       {errors.general && (
-        <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-lg bg-primary-50 border-[1.5px] border-primary-100 px-4 py-3 text-xs font-bold text-primary-600 uppercase tracking-tight">
           {errors.general}
         </div>
       )}
 
-      <FormField
-        label="Email"
-        type="email"
-        placeholder="you@example.com"
-        autoComplete="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={errors.email}
-      />
+      <div className="space-y-4">
+        <FormField
+          label="Email Address"
+          type="email"
+          placeholder="yourname@email.com"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={errors.email}
+        />
 
-      <FormField
-        label="Password"
-        type="password"
-        placeholder="••••••••"
-        autoComplete="current-password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        error={errors.password}
-      />
+        <FormField
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={errors.password}
+        />
+      </div>
 
       <button
         type="submit"
         disabled={loading}
         className="
-          w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white
-          transition-all hover:bg-primary-600 active:scale-[.98]
+          w-full rounded-xl bg-primary-500 py-4 text-[12px] font-display uppercase tracking-widest text-white
+          border-b-[4px] border-primary-700 shadow-md transition-all 
+          hover:bg-primary-600 active:border-b-0 active:translate-y-1 active:shadow-none
           disabled:opacity-60 disabled:cursor-not-allowed
           flex items-center justify-center gap-2
         "
@@ -103,20 +106,20 @@ export default function LoginForm() {
         {loading ? (
           <>
             <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-            Signing in…
+            Connecting…
           </>
         ) : (
-          'Sign in'
+          'Sign In'
         )}
       </button>
 
-      <p className="text-center text-sm text-slate-500">
-        No account?{' '}
+      <p className="text-center text-[10px] font-bold text-muted uppercase tracking-wider">
+        No account yet?{' '}
         <Link
           to="/signup"
-          className="font-semibold text-primary-600 hover:text-primary-700"
+          className="text-primary-500 hover:text-primary-600 underline underline-offset-2"
         >
-          Create one
+          Create SakaySure Account
         </Link>
       </p>
     </form>

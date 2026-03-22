@@ -119,9 +119,9 @@ export async function getUserVote(userId: string, routeId: string): Promise<Vote
 /**
  * Cast or undo a vote.
  *
- * - No existing vote  → cast it, increment counter, return the value.
- * - Same vote exists  → undo it, decrement counter, return null.
- * - Diff vote exists  → no-op, return the existing value (UI blocks this).
+ * - No existing vote   cast it, increment counter, return the value.
+ * - Same vote exists   undo it, decrement counter, return null.
+ * - Diff vote exists   no-op, return the existing value (UI blocks this).
  */
 export async function castVote(userId: string, routeId: string, value: VoteValue): Promise<VoteValue | null> {
   const voteRef = doc(db, VOTES_COLLECTION, voteDocId(userId, routeId));

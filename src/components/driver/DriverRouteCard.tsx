@@ -1,136 +1,65 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { deleteDriverRoute } from '@/services/firebase/routes'
-import ActiveToggle from './ActiveToggle'
-import { Bus, TramFront, Bike, Pencil, Clock } from 'lucide-react'
-import type { DriverRoute } from '@/types'
-import type { JSX } from 'react'
-
-const VEHICLE_ICON: Record<string, JSX.Element> = {
-  jeepney: <TramFront className="w-5 h-5" />,
-  bus: <Bus className="w-5 h-5" />,
-  tricycle: <Bike className="w-5 h-5" />,
-}
+import { TramFront, Bus, Bike, Clock, Pencil, Navigation } from "lucide-react";
+import type { DriverRoute } from "@/types";
+import { Link } from "react-router-dom";
+import ActiveToggle from "./ActiveToggle";
 
 interface DriverRouteCardProps {
-  route: DriverRoute
+  route: DriverRoute;
 }
 
 export default function DriverRouteCard({ route }: DriverRouteCardProps) {
-  const navigate = useNavigate()
-  const [deleting, setDeleting] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
-
-  async function handleDelete() {
-    setDeleting(true)
-    try {
-      await deleteDriverRoute(route.id)
-    } catch (err) {
-      console.error('Delete failed:', err)
-      setDeleting(false)
-    }
-  }
+  const Icon = route.vehicleType === "bus" ? Bus : route.vehicleType === "jeepney" ? TramFront : Bike;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-      {/* Header */}
-      <div className="px-4 pt-4 pb-3 flex items-start gap-3">
-        <span className="mt-0.5 text-primary-600" aria-hidden>
-          {VEHICLE_ICON[route.vehicleType]}
-        </span>
+    <div className="bg-white border-[1.5px] border-ink rounded-xl shadow-[4px_4px_0px_0px_rgba(26,18,8,0.05)] overflow-hidden group hover:border-primary-500 transition-all">
+      {/* Route info */}
+      <div className="p-5 flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-slate-800 truncate">{route.name}</h3>
-          <p className="text-xs text-slate-500 capitalize mt-0.5">
-            {route.vehicleType} · {route.stops.length} stop{route.stops.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        {/* Edit button */}
-        <button
-          type="button"
-          onClick={() => navigate(`/driver/edit-route/${route.id}`)}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-          aria-label="Edit route"
-        >
-          <Pencil className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Schedule */}
-      <div className="px-4 pb-3 flex items-center gap-2 text-xs text-slate-500">
-        <Clock className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-        {route.schedule.startTime} – {route.schedule.endTime}
-        {route.pricing && (
-          <>
-            <span className="text-slate-300">·</span>
-            <span className="text-primary-600 font-medium">
-              ₱{route.pricing.minFare}
-              {route.pricing.perStopFare ? `+₱${route.pricing.perStopFare}/stop` : ' flat'}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-accent-500 px-2 py-0.5 rounded-[6px] text-[10px] font-display uppercase tracking-wider text-ink border border-ink/10">
+              {route.vehicleType}
             </span>
-          </>
-        )}
-      </div>
-
-      {/* Stops preview */}
-      {route.stops.length > 0 && (
-        <div className="px-4 pb-3">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {route.stops.slice(0, 4).map((stop, i) => (
-              <span
-                key={stop.id}
-                className="text-xs bg-slate-100 text-slate-600 rounded-full px-2.5 py-0.5 inline-flex items-center gap-1"
-              >
-                {i === 0 && <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />}
-                {i === route.stops.length - 1 && i !== 0 && <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />}
-                {stop.name.split(',')[0]}
-              </span>
-            ))}
-            {route.stops.length > 4 && (
-              <span className="text-xs text-slate-400">
-                +{route.stops.length - 4} more
+            {route.isActive && (
+              <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-tighter">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                Live Now
               </span>
             )}
           </div>
-        </div>
-      )}
-
-      {/* Active toggle */}
-      <div className="px-4 pb-4">
-        <ActiveToggle route={route} />
-      </div>
-
-      {/* Delete */}
-      {!showConfirm ? (
-        <div className="border-t border-slate-100 px-4 py-2.5">
-          <button
-            type="button"
-            onClick={() => setShowConfirm(true)}
-            className="text-xs text-red-400 hover:text-red-600 transition-colors"
-          >
-            Delete route
-          </button>
-        </div>
-      ) : (
-        <div className="border-t border-red-100 bg-red-50 px-4 py-3 flex items-center justify-between gap-3">
-          <p className="text-xs text-red-600 font-medium">Delete this route?</p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setShowConfirm(false)}
-              className="text-xs text-slate-500 hover:text-slate-700"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleting}
-              className="text-xs font-semibold text-red-600 hover:text-red-800 disabled:opacity-50"
-            >
-              {deleting ? 'Deleting…' : 'Yes, delete'}
-            </button>
+          
+          <h3 className="text-xl font-display text-ink uppercase tracking-tight mb-2 group-hover:text-primary-500 transition-colors">
+            {route.name}
+          </h3>
+          
+          <div className="flex items-center gap-3 text-xs font-semibold text-muted uppercase tracking-tight">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              <span>{route.schedule.startTime} - {route.schedule.endTime}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Navigation className="w-3.5 h-3.5" />
+              <span>{route.stops.length} Stops</span>
+            </div>
           </div>
         </div>
-      )}
+
+        <div className="flex flex-col gap-2 shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-surface border-[1.5px] border-slate-200 flex items-center justify-center text-ink shadow-inner group-hover:bg-primary-50 group-hover:border-primary-200 transition-all">
+            <Icon className="w-6 h-6" strokeWidth={2.2} />
+          </div>
+          <Link
+            to={`/driver/edit-route/${route.id}`}
+            className="w-12 h-10 rounded-lg bg-ink text-white flex items-center justify-center shadow-md hover:bg-slate-900 active:translate-y-0.5 transition-all"
+          >
+            <Pencil className="w-4 h-4 text-accent-500" strokeWidth={2.5} />
+          </Link>
+        </div>
+      </div>
+      
+      {/* Active Toggle integrated */}
+      <div className="px-5 pb-4 border-t border-slate-100">
+        <ActiveToggle route={route} />
+      </div>
     </div>
-  )
+  );
 }

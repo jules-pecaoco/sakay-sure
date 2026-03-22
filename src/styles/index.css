@@ -1,85 +1,75 @@
 @import "tailwindcss";
 
-/*
- * ╔══════════════════════════════════════════════════════════════════════╗
- * ║  SAKAY SURE — Brand Design Tokens                                   ║
- * ║                                                                     ║
- * ║  To rebrand the app, update the --color-primary-* and               ║
- * ║  --color-accent-* values below. Every component references          ║
- * ║  these tokens, so a single edit here propagates site-wide.          ║
- * ╚══════════════════════════════════════════════════════════════════════╝
- */
-
 @theme {
-  /* ── Primary brand color (sky blue) ─────────────────────────────── */
-  --color-primary-50:  #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
+  /* Brand Colors - Jeepney Bold System */
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-200: #fecaca;
+  --color-primary-300: #fca5a5;
+  --color-primary-400: #f87171;
+  --color-primary-500: #E8321A; /* Primary Red */
+  --color-primary-600: #dc2626;
+  --color-primary-700: #b91c1c;
 
-  /* ── Accent color (purple — community / commuter features) ──────── */
-  --color-accent-50:  #faf5ff;
-  --color-accent-100: #f3e8ff;
-  --color-accent-200: #e9d5ff;
-  --color-accent-500: #a855f7;
-  --color-accent-600: #9333ea;
-  --color-accent-700: #7e22ce;
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #FFD84D; /* Accent Yellow */
+  --color-accent-600: #d97706;
 
-  /* ── Semantic surfaces ──────────────────────────────────────────── */
-  --color-surface: #f8fafc;
-  --color-card: #ffffff;
-  --color-muted: #94a3b8;
+  /* Semantic Interface Tokens */
+  --color-surface: #F5F0E8;   /* Warm Cream */
+  --color-ink: #1A1208;       /* Dark Ink */
+  --color-card: #FFFFFF;      /* White */
+  --color-muted: #888888;     /* Muted Text */
 
-  /* ── Typography ─────────────────────────────────────────────────── */
-  --font-sans: "Inter", system-ui, sans-serif;
-
-  /* ── Shared radii ───────────────────────────────────────────────── */
-  --radius-card: 1.25rem;
-  --radius-input: 0.75rem;
-  --radius-btn: 0.75rem;
+  /* Override radius for "Jeepney Bold" aesthetic (no pills) */
+  --radius-xl: 10px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
 }
 
+/* Custom Base Styles */
+@layer base {
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap');
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+  }
+
+  /* Section Labels (10px, uppercase, tracking) */
+  .section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em; /* 2.5px approx */
+    color: var(--color-muted);
+    font-weight: 600;
+  }
+
+  /* Flat Card Utility */
+  .card-flat {
+    background-color: var(--color-white);
+    border: 1.5px solid #E2E8F0; /* Slate-200 default border */
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* Transitions */
 * {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: var(--font-sans);
-  background-color: var(--color-surface);
-  color: #1e293b;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#root {
-  display: flex;
-  flex-direction: column;
-}
-
-.mapboxgl-map {
-  font-family: var(--font-sans) !important;
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
+@custom-variant dark (&:where(.dark, .dark *));

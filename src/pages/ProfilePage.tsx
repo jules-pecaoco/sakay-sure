@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
-import { LogOut } from 'lucide-react'
+import { LogOut, Settings, CreditCard, ShieldCheck } from 'lucide-react'
+import TopBar from '@/components/common/TopBar'
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth()
@@ -18,84 +19,72 @@ export default function ProfilePage() {
     }
   }
 
-  const roleBadge =
+  const roleStyles =
     user?.role === 'driver'
-      ? 'bg-amber-100 text-amber-700'
-      : 'bg-primary-100 text-primary-700'
+      ? 'bg-accent-500 text-ink border-ink'
+      : 'bg-ink text-white border-white/20'
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white px-6 pt-14 pb-6 shadow-sm">
-        <h1 className="text-xl font-bold text-slate-800">Profile</h1>
-      </div>
+    <div className="min-h-screen bg-surface">
+      <TopBar 
+        title="ProfileSure" 
+        showBack={false}
+      />
 
-      <div className="px-4 py-6 space-y-4 max-w-lg mx-auto">
-        {/* Avatar + info card */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-xl font-bold shrink-0">
+      <div className="px-4 py-6 space-y-5 max-w-lg mx-auto">
+        {/* Avatar + info card — Flat Signboard Style */}
+        <div className="bg-white border-[1.5px] border-ink rounded-xl p-5 shadow-[4px_4px_0px_0px_rgba(26,18,8,0.05)] flex items-center gap-5">
+          <div className="w-16 h-16 rounded-xl bg-surface border-[1.5px] border-slate-200 flex items-center justify-center text-primary-500 text-3xl font-display shrink-0 shadow-inner">
             {user?.displayName?.charAt(0).toUpperCase() ?? '?'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-slate-800 truncate">
+            <h2 className="text-xl font-display text-ink uppercase tracking-tight truncate leading-tight">
               {user?.displayName ?? '—'}
-            </p>
-            <p className="text-sm text-slate-500 truncate">{user?.email}</p>
+            </h2>
+            <p className="text-xs text-muted font-medium truncate mb-2">{user?.email}</p>
             <span
-              className={`mt-1.5 inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${roleBadge}`}
+              className={`inline-block text-[10px] font-display uppercase tracking-wider px-2.5 py-1 rounded-[6px] border ${roleStyles}`}
             >
               {user?.role}
             </span>
           </div>
         </div>
 
-        {/* Account details */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-5 py-3 border-b border-slate-100">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              Account
-            </p>
-          </div>
-          <div className="divide-y divide-slate-100">
-            <InfoRow label="Name" value={user?.displayName ?? '—'} />
-            <InfoRow label="Email" value={user?.email ?? '—'} />
-            <InfoRow label="Role" value={user?.role ?? '—'} capitalize />
-            <InfoRow
-              label="Member since"
-              value={
-                user?.createdAt
-                  ? new Date(user.createdAt).toLocaleDateString('en-PH', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  : '—'
-              }
-            />
+        {/* Account settings list */}
+        <div className="space-y-3">
+          <p className="section-label pl-1">User Account</p>
+          <div className="bg-white rounded-xl border-[1.5px] border-slate-200 overflow-hidden shadow-sm">
+            <div className="divide-y divide-slate-100 font-medium">
+               <ProfileRow icon={<Settings className="w-4 h-4" />} label="Display Name" value={user?.displayName ?? '—'} />
+               <ProfileRow icon={<CreditCard className="w-4 h-4" />} label="Email Address" value={user?.email ?? '—'} />
+               <ProfileRow icon={<ShieldCheck className="w-4 h-4" />} label="App Member Since" 
+                 value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-PH', { year: 'numeric', month: 'short' }) : '—'} 
+               />
+            </div>
           </div>
         </div>
 
-        {/* Sign out */}
+        {/* Sign out — Heavy Border Style */}
         <button
           onClick={handleSignOut}
           disabled={signingOut}
           className="
-            w-full rounded-2xl bg-white border border-red-200 py-4
-            text-sm font-semibold text-red-500 shadow-sm
-            transition-all hover:bg-red-50 active:scale-[.98]
+            w-full rounded-xl bg-white border-[1.5px] border-primary-500 py-4
+            text-[12px] font-display uppercase tracking-widest text-primary-500 shadow-[4px_4px_0px_0px_rgba(232,50,26,0.1)]
+            transition-all hover:bg-primary-50 active:translate-y-0.5 active:shadow-none
             disabled:opacity-60 disabled:cursor-not-allowed
-            flex items-center justify-center gap-2
+            flex items-center justify-center gap-2.5
           "
         >
           {signingOut ? (
             <>
-              <span className="w-4 h-4 rounded-full border-2 border-red-300 border-t-red-500 animate-spin" />
-              Signing out…
+              <span className="w-4 h-4 rounded-full border-2 border-primary-200 border-t-primary-500 animate-spin" />
+              Please wait…
             </>
           ) : (
             <>
-              <LogOut className="w-4 h-4" />
-              Sign out
+              <LogOut className="w-4 h-4" strokeWidth={2.5} />
+              Sign Out
             </>
           )}
         </button>
@@ -104,27 +93,16 @@ export default function ProfilePage() {
   )
 }
 
-// ── Helper ────────────────────────────────────────────────────────────────────
-
-function InfoRow({
-  label,
-  value,
-  capitalize = false,
-}: {
-  label: string
-  value: string
-  capitalize?: boolean
-}) {
+function ProfileRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="px-5 py-3.5 flex items-center justify-between gap-4">
-      <span className="text-sm text-slate-500 shrink-0">{label}</span>
-      <span
-        className={`text-sm font-medium text-slate-800 text-right truncate ${
-          capitalize ? 'capitalize' : ''
-        }`}
-      >
-        {value}
-      </span>
+    <div className="px-5 py-4 flex items-center justify-between gap-4 group hover:bg-surface transition-colors">
+      <div className="flex items-center gap-3">
+        <div className="text-muted group-hover:text-primary-500 transition-colors">
+          {icon}
+        </div>
+        <span className="text-xs text-muted font-bold uppercase tracking-tight">{label}</span>
+      </div>
+      <span className="text-sm font-bold text-ink tracking-tight">{value}</span>
     </div>
   )
 }

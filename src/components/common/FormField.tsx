@@ -1,32 +1,33 @@
-import type { InputHTMLAttributes } from "react";
+import type { InputHTMLAttributes } from 'react'
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
-  error?: string;
+  label: string
+  error?: string
 }
 
-export default function FormField({ label, error, id, ...props }: FormFieldProps) {
-  const fieldId = id ?? label.toLowerCase().replace(/\s+/g, "-");
-
+export default function FormField({ label, error, ...props }: FormFieldProps) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={fieldId} className="block text-sm font-medium text-slate-700">
+      <label className="section-label pl-1">
         {label}
       </label>
-      <input
-        id={fieldId}
-        className={`
-          w-full rounded-xl border px-4 py-3 text-sm text-slate-800
-          placeholder:text-slate-400 outline-none transition-colors
-          ${
-            error
-              ? "border-red-400 bg-red-50 focus:border-red-500"
-              : "border-slate-200 bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
-          }
-        `}
-        {...props}
-      />
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      <div className="relative">
+        <input
+          {...props}
+          className={`
+            w-full rounded-xl border-[1.5px] bg-white px-4 py-3.5 text-sm text-ink
+            transition-all outline-none placeholder:text-muted/50 font-medium
+            ${error 
+              ? 'border-primary-500 bg-primary-50/30' 
+              : 'border-slate-200 focus:border-ink focus:bg-white'}
+          `}
+        />
+        {error && (
+          <p className="absolute -bottom-5 left-1 text-[9px] font-bold text-primary-500 uppercase tracking-wider">
+            {error}
+          </p>
+        )}
+      </div>
     </div>
-  );
+  )
 }

@@ -1,107 +1,110 @@
-import { useSearchParams } from 'react-router-dom'
-import { useAllRoutes } from '@/hooks/useAllRoutes'
-import { runPrediction } from '@/engine'
-import PredictionCard from '@/components/predictions/PredictionCard'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
-import RouteMapPreview from '@/components/map/RouteMapPreview'
-import { Search } from 'lucide-react'
+import { useSearchParams } from "react-router-dom";
+import { useAllRoutes } from "@/hooks/useAllRoutes";
+import { runPrediction } from "@/engine";
+import PredictionCard from "@/components/predictions/PredictionCard";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import RouteMapPreview from "@/components/map/RouteMapPreview";
+import RouteVoteButtons from "@/components/commuter/RouteVoteButtons";
+import TopBar from "@/components/common/TopBar";
+import EmptyState from "@/components/common/EmptyState";
 
 export default function PredictPage() {
-  const [params] = useSearchParams()
-  const routeId = params.get('routeId')
-  const routeType = params.get('type') as 'driver' | 'commuter' | null
+  const [params] = useSearchParams();
+  const routeId = params.get("routeId");
+  const routeType = params.get("type") as "driver" | "commuter" | null;
 
-  const { driverRoutes, commuterRoutes, activeDrivers, loading } = useAllRoutes()
+  const { driverRoutes, commuterRoutes, activeDrivers, loading } = useAllRoutes();
 
   // Find the selected route
-  const selectedDriver = routeType === 'driver'
-    ? driverRoutes.find((r) => r.id === routeId)
-    : null
-  const selectedCommuter = routeType === 'commuter'
-    ? commuterRoutes.find((r) => r.id === routeId)
-    : null
-  const selectedRoute = selectedDriver ?? selectedCommuter
+  const selectedDriver = routeType === "driver" ? driverRoutes.find((r) => r.id === routeId) : null;
+  const selectedCommuter = routeType === "commuter" ? commuterRoutes.find((r) => r.id === routeId) : null;
+  const selectedRoute = selectedDriver ?? selectedCommuter;
 
   // Run prediction for the selected route
   const prediction = selectedRoute
     ? runPrediction({
-        driverRoutes: selectedDriver
-          ? driverRoutes.filter((r) => r.id === routeId)
-          : [],
+        driverRoutes: selectedDriver ? driverRoutes.filter((r) => r.id === routeId) : [],
         activeDriverRoutes: selectedDriver
           ? activeDrivers
               .filter((a) => a.routeId === routeId)
               .map((a) => driverRoutes.find((r) => r.id === a.routeId))
               .filter((r): r is NonNullable<typeof r> => !!r)
           : [],
-        commuterRoutes: selectedCommuter
-          ? commuterRoutes.filter((r) => r.id === routeId)
-          : commuterRoutes,
+        commuterRoutes: selectedCommuter ? commuterRoutes.filter((r) => r.id === routeId) : commuterRoutes,
       })
-    : null
+    : null;
 
-  const stops = selectedRoute?.stops ?? []
-  const geometry = selectedRoute?.geometry ?? null
+  const stops = selectedRoute?.stops ?? [];
+  const geometry = selectedRoute?.geometry ?? null;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Top bar */}
-      <div className="bg-white px-4 pt-14 pb-4 shadow-sm">
-        <h1 className="text-xl font-bold text-slate-800">Prediction</h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          {selectedRoute ? selectedRoute.name : 'Select a route from Explore'}
-        </p>
-      </div>
+    <div className="min-h-screen bg-surface">
+      <TopBar title={routeType === "driver" ? "PredictSure" : "PredictSure"} />
 
-      <div className="px-4 py-5 max-w-lg mx-auto space-y-4">
+      <div className="px-4 py-5 max-w-lg mx-auto space-y-5">
         {loading ? (
           <div className="flex justify-center py-12">
-            <LoadingSpinner message="Loading data…" />
+            <LoadingSpinner message="Loading estimations…" />
           </div>
         ) : !selectedRoute ? (
-          <EmptyState />
+          <EmptyState title="Route not found" message="Tap any route signboard on the Explore page to see real-time predictions." />
         ) : (
           <>
             {/* Prediction card */}
-            {prediction && (
-              <PredictionCard
-                prediction={prediction}
-                routeName={selectedRoute.name}
-              />
+            {prediction && <PredictionCard prediction={prediction} routeName={selectedRoute.name} />}
+
+            {/* Voting Component for Commuter Routes */}
+            {routeType === "commuter" && selectedCommuter && (
+              <div className="bg-white rounded-xl border-[1.5px] border-slate-200 p-5 shadow-sm">
+                <RouteVoteButtons
+                  routeId={selectedCommuter.id}
+                  helpfulVotes={selectedCommuter.helpfulVotes}
+                  notHelpfulVotes={selectedCommuter.notHelpfulVotes}
+                />
+              </div>
             )}
 
             {/* Map preview */}
             {stops.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1">Route map</p>
-                <RouteMapPreview
-                  stops={stops}
-                  geometry={geometry}
-                  className="h-56 rounded-2xl overflow-hidden"
-                />
+              <div className="space-y-3">
+                <p className="section-label pl-1">Route Map View</p>
+                <div className="border-[2px] border-ink rounded-xl overflow-hidden shadow-md">
+                  <RouteMapPreview stops={stops} geometry={geometry} className="h-60" />
+                </div>
               </div>
             )}
 
             {/* Stop list */}
             {stops.length > 0 && (
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-slate-100">
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Stops</p>
-                </div>
-                <div className="divide-y divide-slate-100">
-                  {stops.map((stop, i) => (
-                    <div key={stop.id} className="px-4 py-3 flex items-center gap-3">
-                      <span className={`
-                        w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0
-                        ${i === 0 ? 'bg-green-100 text-green-700'
-                          : i === stops.length - 1 ? 'bg-red-100 text-red-600'
-                          : 'bg-slate-100 text-slate-500'}
-                      `}>
-                        {i === 0 ? 'S' : i === stops.length - 1 ? 'E' : i}
-                      </span>
-                      <span className="text-sm text-slate-700">{stop.name.split(',')[0]}</span>
-                    </div>
-                  ))}
+              <div className="space-y-3">
+                <p className="section-label pl-1">Signboard Stops</p>
+                <div className="bg-white rounded-xl border-[1.5px] border-slate-200 overflow-hidden shadow-sm">
+                  <div className="divide-y divide-slate-100">
+                    {stops.map((stop, i) => (
+                      <div key={stop.id} className="px-5 py-4 flex items-center gap-4 group hover:bg-surface transition-colors cursor-default">
+                        <div
+                          className={`
+                          w-8 h-8 rounded-lg border-2 flex items-center justify-center text-[11px] font-display shrink-0 shadow-sm
+                          ${
+                            i === 0
+                              ? "bg-primary-500 border-ink text-white"
+                              : i === stops.length - 1
+                                ? "bg-accent-500 border-ink text-ink font-bold"
+                                : "bg-white border-slate-200 text-ink"
+                          }
+                        `}
+                        >
+                          {i === 0 ? "START" : i === stops.length - 1 ? "END" : i}
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-sm font-bold text-ink tracking-tight uppercase group-hover:text-primary-500 flex items-center gap-2">
+                            {stop.name.split(",")[0]}
+                          </span>
+                          <p className="text-[10px] text-muted tracking-tight font-medium uppercase mt-0.5">Philippines</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -109,19 +112,5 @@ export default function PredictPage() {
         )}
       </div>
     </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center py-16 text-center gap-3 px-6">
-      <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center">
-        <Search className="w-7 h-7 text-primary-500" />
-      </div>
-      <h3 className="font-semibold text-slate-700">No route selected</h3>
-      <p className="text-sm text-slate-400 leading-relaxed">
-        Go to <strong>Explore</strong>, tap any route card, and predictions will appear here.
-      </p>
-    </div>
-  )
+  );
 }

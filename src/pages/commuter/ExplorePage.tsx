@@ -6,13 +6,15 @@ import { useAllRoutes } from "@/hooks/useAllRoutes";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import RouteTypeToggle, { type RouteFilter } from "@/components/routes/RouteTypeToggle";
 import { DriverRouteCard, CommuterRouteCard } from "@/components/routes/RouteCard";
+import TopBar from "@/components/common/TopBar";
+import EmptyState from "@/components/common/EmptyState";
 import LocationPermissionBanner from "@/components/common/LocationPermissionBanner";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { MapIcon, Search } from "lucide-react";
+import { MapIcon, Search, Plus } from "lucide-react";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
-const DEFAULT_CENTER: [number, number] = [123.8854, 10.3157];
+const DEFAULT_CENTER: [number, number] = [120.9842, 14.5995]; // Manila
 
 export default function ExplorePage() {
   const { driverRoutes, commuterRoutes, activeDrivers, loading } = useAllRoutes();
@@ -20,7 +22,7 @@ export default function ExplorePage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<RouteFilter>("all");
   const [search, setSearch] = useState("");
-  const [showMap, setShowMap] = useState(false);
+  const [showMap, setShowMap] = useState(true);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -44,113 +46,9 @@ export default function ExplorePage() {
         trackUserLocation: true,
         showUserHeading: true,
       }),
-      "bottom-right"
+      "bottom-right",
     );
     mapRef.current = map;
-
-    map.on("load", () => {
-      // 1. Add Driver Routes
-      driverRoutes.forEach((route) => {
-        if (!route.geometry) return;
-        const sourceId = `route-${route.id}`;
-        if (map.getSource(sourceId)) return;
-        map.addSource(sourceId, { type: "geojson", data: { type: "Feature", properties: { id: route.id, name: route.name, type: 'driver' }, geometry: route.geometry } });
-        map.addLayer({
-          id: sourceId,
-          type: "line",
-          source: sourceId,
-          layout: { "line-join": "round", "line-cap": "round" },
-          paint: {
-            "line-color": route.isActive ? "#22c55e" : "#000000",
-            "line-width": 4,
-            "line-opacity": 0.7,
-          },
-        });
-
-        // Add start marker for driver route
-        const startPos = route.stops[0].coordinates;
-        const el = document.createElement('div');
-        el.className = 'w-4 h-4 rounded-full border-2 border-white shadow-sm cursor-pointer';
-        el.style.backgroundColor = route.isActive ? '#22c55e' : '#000000';
-        new mapboxgl.Marker({ element: el })
-          .setLngLat([startPos.lng, startPos.lat])
-          .setPopup(new mapboxgl.Popup({ offset: 10 }).setHTML(`
-            <div class="p-2 min-w-30">
-              <p class="text-xs font-bold text-slate-800">${route.name}</p>
-              <p class="text-[10px] text-slate-500 mb-2">Driver Route</p>
-              <a href="/predict?routeId=${route.id}&type=driver" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
-            </div>
-          `))
-          .addTo(map);
-
-        // Click handler for line
-        map.on('click', sourceId, (e) => {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
-              <div class="p-2 min-w-30">
-                <p class="text-xs font-bold text-slate-800">${route.name}</p>
-                <p class="text-[10px] text-slate-500 mb-2">Driver Route</p>
-                <a href="/predict?routeId=${route.id}&type=driver" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
-              </div>
-            `)
-            .addTo(map);
-        });
-        map.on('mouseenter', sourceId, () => map.getCanvas().style.cursor = 'pointer');
-        map.on('mouseleave', sourceId, () => map.getCanvas().style.cursor = '');
-      });
-
-      // 2. Add Community Routes
-      commuterRoutes.forEach((route) => {
-        if (!route.geometry) return;
-        const sourceId = `route-${route.id}`;
-        if (map.getSource(sourceId)) return;
-        map.addSource(sourceId, { type: "geojson", data: { type: "Feature", properties: { id: route.id, name: route.name, type: 'commuter' }, geometry: route.geometry } });
-        map.addLayer({
-          id: sourceId,
-          type: "line",
-          source: sourceId,
-          layout: { "line-join": "round", "line-cap": "round" },
-          paint: {
-            "line-color": "#9333ea", // Brand accent purple
-            "line-width": 4,
-            "line-opacity": 0.7,
-          },
-        });
-
-        // Add start marker for community route
-        const startPos = route.stops[0].coordinates;
-        const el = document.createElement('div');
-        el.className = 'w-4 h-4 rounded-full border-2 border-white shadow-sm cursor-pointer';
-        el.style.backgroundColor = '#9333ea';
-        new mapboxgl.Marker({ element: el })
-          .setLngLat([startPos.lng, startPos.lat])
-          .setPopup(new mapboxgl.Popup({ offset: 10 }).setHTML(`
-            <div class="p-2 min-w-30">
-              <p class="text-xs font-bold text-slate-800">${route.name}</p>
-              <p class="text-[10px] text-slate-500 mb-2">Community Route</p>
-              <a href="/predict?routeId=${route.id}&type=commuter" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
-            </div>
-          `))
-          .addTo(map);
-
-        // Click handler for line
-        map.on('click', sourceId, (e) => {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
-              <div class="p-2 min-w-30">
-                <p class="text-xs font-bold text-slate-800">${route.name}</p>
-                <p class="text-[10px] text-slate-500 mb-2">Community Route</p>
-                <a href="/predict?routeId=${route.id}&type=commuter" class="text-[10px] font-bold text-primary-600 hover:underline">View details →</a>
-              </div>
-            `)
-            .addTo(map);
-        });
-        map.on('mouseenter', sourceId, () => map.getCanvas().style.cursor = 'pointer');
-        map.on('mouseleave', sourceId, () => map.getCanvas().style.cursor = '');
-      });
-    });
 
     return () => {
       map.remove();
@@ -159,23 +57,117 @@ export default function ExplorePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showMap]);
 
+  // ── Sync Routes to Map ───────────────────────────────────────────────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !showMap) return;
+
+    const addRouteLayer = (route: any, type: "driver" | "commuter", index: number) => {
+      if (!route.geometry) return;
+      const sourceId = `route-${route.id}`;
+      const isVisible = filter === "all" || filter === type;
+
+      // Add Source if not exists
+      if (!map.getSource(sourceId)) {
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: { type: "Feature", properties: { id: route.id, name: route.name, type }, geometry: route.geometry },
+        });
+
+        // Add Layer
+        map.addLayer({
+          id: sourceId,
+          type: "line",
+          source: sourceId,
+          layout: { "line-join": "round", "line-cap": "round", visibility: isVisible ? "visible" : "none" },
+          paint: {
+            "line-color": type === "driver" ? (route.isActive ? "#E8321A" : "#1A1208") : "#FFD84D",
+            "line-width": 4,
+            "line-opacity": 0.8,
+            "line-offset": type === "commuter" ? 4 + index * 2 : index * 2, // Dynamic offset based on index and type
+          },
+        });
+
+        // Click handler
+        map.on("click", sourceId, (e) => {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(
+              `
+              <div class="p-2 min-w-30">
+                <p class="text-xs font-display text-ink uppercase tracking-tight">${route.name}</p>
+                <p class="text-[9px] font-bold text-muted mb-2 tracking-widest uppercase">${type === "driver" ? "Driver" : "Community"} Route</p>
+                <a href="/predict?routeId=${route.id}&type=${type}" class="text-[10px] font-bold text-primary-500 hover:underline">View details</a>
+              </div>
+            `,
+            )
+            .addTo(map);
+        });
+
+        map.on("mouseenter", sourceId, () => {
+          map.getCanvas().style.cursor = "pointer";
+          map.setPaintProperty(sourceId, "line-width", 6);
+          map.setPaintProperty(sourceId, "line-opacity", 1);
+        });
+
+        map.on("mouseleave", sourceId, () => {
+          map.getCanvas().style.cursor = "";
+          map.setPaintProperty(sourceId, "line-width", 4);
+          map.setPaintProperty(sourceId, "line-opacity", 0.8);
+        });
+
+        // Add start marker
+        const startPos = route.stops[0].coordinates;
+        const el = document.createElement("div");
+        el.className = "w-4 h-4 rounded-full border-2 border-white shadow-md cursor-pointer transition-transform hover:scale-125";
+        el.style.backgroundColor = type === "driver" ? (route.isActive ? "#E8321A" : "#1A1208") : "#FFD84D";
+        el.dataset.routeId = route.id; // Store ID for lookup
+
+        new mapboxgl.Marker({ element: el })
+          .setLngLat([startPos.lng, startPos.lat])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 10 }).setHTML(`
+            <div class="p-2 min-w-30">
+              <p class="text-xs font-display text-ink uppercase tracking-tight">${route.name}</p>
+              <p class="text-[9px] font-bold text-muted mb-2 tracking-widest uppercase">${type === "driver" ? "Driver" : "Community"} Route</p>
+              <a href="/predict?routeId=${route.id}&type=${type}" class="text-[10px] font-bold text-primary-500 hover:underline">View details</a>
+            </div>
+          `),
+          )
+          .addTo(map);
+      } else {
+        // Update visibility if already exists
+        map.setLayoutProperty(sourceId, "visibility", isVisible ? "visible" : "none");
+
+        // Update marker visibility - search for marker by element logic
+        const markers = document.querySelectorAll(`[data-route-id="${route.id}"]`);
+        markers.forEach((m) => {
+          (m as HTMLElement).style.display = isVisible ? "block" : "none";
+        });
+      }
+    };
+
+    driverRoutes.forEach((r, i) => addRouteLayer(r, "driver", i));
+    commuterRoutes.forEach((r, i) => addRouteLayer(r, "commuter", i));
+  }, [driverRoutes, commuterRoutes, filter, showMap]);
+
+
   // ── Update active driver markers ──────────────────────────────────────────
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !showMap) return;
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
     activeDrivers.forEach((driver) => {
       const el = document.createElement("div");
       el.style.cssText = `
-        width:32px;height:32px;border-radius:50%;
-        background:#22c55e;border:3px solid white;
-        box-shadow:0 2px 8px rgba(0,0,0,0.25);
+        width:34px;height:34px;border-radius:10px;
+        background:#E8321A;border:2.5px solid white;
+        box-shadow:4px 4px 0px 0px rgba(26,18,8,0.1);
         display:flex;align-items:center;justify-content:center;
       `;
-      // Use an SVG bus icon instead of emoji
-      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>`;
+      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>`;
       const marker = new mapboxgl.Marker({ element: el }).setLngLat([driver.position.lng, driver.position.lat]).addTo(map);
       markersRef.current.push(marker);
     });
@@ -197,93 +189,110 @@ export default function ExplorePage() {
   const totalFiltered = filteredDriverRoutes.length + filteredCommuterRoutes.length;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Top bar */}
-      <div className="bg-white px-4 pt-14 pb-4 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-800">Explore</h1>
+    <div className="min-h-screen bg-surface">
+      <TopBar
+        title="ExploreSure"
+        showBack={false}
+        rightElement={
           <button
             type="button"
             onClick={() => setShowMap((v) => !v)}
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
-              showMap ? "bg-primary-500 text-white" : "bg-slate-100 text-slate-600"
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-all border-[1.5px] ${
+              showMap
+                ? "bg-white text-primary-500 border-white shadow-md active:translate-y-0.5"
+                : "bg-primary-600 text-white border-primary-400 hover:bg-primary-700 active:translate-y-0.5"
             }`}
           >
             <MapIcon className="w-4 h-4" />
-            {showMap ? "Hide map" : "Map view"}
+            {showMap ? "Hide" : "Map"}
           </button>
-        </div>
+        }
+      />
 
-        {/* Search */}
+      <div className="bg-primary-500 px-4 pb-5 shadow-lg border-b-[3px] border-ink/10">
+        {/* Search — Inverted dark block */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
           <input
             type="search"
-            placeholder="Search routes or stops…"
+            placeholder="Search routes, stops, or drivers…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-400 focus:bg-white"
+            className="w-full rounded-lg border-none bg-ink/90 pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-accent-500/50 shadow-inner"
           />
         </div>
-
-        {/* Filter pills */}
-        <RouteTypeToggle value={filter} onChange={setFilter} driverCount={driverRoutes.length} commuterCount={commuterRoutes.length} />
       </div>
 
-      {/* Map */}
-      {showMap && (
-        <div className="space-y-3 px-4 pb-1">
-          <LocationPermissionBanner status={locationStatus} onRequest={requestLocation} />
-          
-          <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-slate-200">
-            <div ref={mapContainerRef} className="h-full w-full" />
-            
-            {/* Legend Overlay */}
-            <div className="absolute top-2 left-2 bg-white/95 backdrop-blur shadow-lg border border-slate-200 rounded-xl p-2.5 z-10 space-y-2 pointer-events-none">
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Legend</h3>
-              <LegendItem color="#22c55e" label="Active Driver" />
-              <LegendItem color="#000000" label="Scheduled/Inactive" />
-              <LegendItem color="#9333ea" label="Community Shared" />
+      <div className="px-4 py-4 max-w-lg mx-auto space-y-4">
+        {/* Map */}
+        {showMap && (
+          <div className="space-y-4 pb-2">
+            <LocationPermissionBanner status={locationStatus} onRequest={requestLocation} />
+
+            <div className="relative h-72 w-full overflow-hidden rounded-xl border-[2px] border-ink shadow-lg">
+              <div ref={mapContainerRef} className="h-full w-full" />
+
+              {/* Legend Overlay — Signboard Style */}
+              <div className="absolute top-3 left-3 bg-white border-[1.5px] border-ink rounded-lg p-2 z-10 space-y-2 pointer-events-none shadow-md">
+                <h3 className="section-label mb-1.5">Map Legend</h3>
+                <LegendItem color="#E8321A" label="Active Driver" />
+                <LegendItem color="#1A1208" label="Scheduled/Inactive" />
+                <LegendItem color="#FFD84D" label="Community Shared" />
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Route list */}
-      <div className="px-4 py-4 space-y-3 max-w-lg mx-auto">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <LoadingSpinner message="Loading routes…" />
-          </div>
-        ) : totalFiltered === 0 ? (
-          <div className="flex flex-col items-center py-16 text-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center">
-              <Search className="w-7 h-7 text-primary-500" />
-            </div>
-            <p className="font-semibold text-slate-600">No routes found</p>
-            <p className="text-sm text-slate-400">{search ? "Try a different search term." : "Be the first to add a community route!"}</p>
-          </div>
-        ) : (
-          <>
-            {filteredDriverRoutes.length > 0 && (
-              <div className="space-y-2">
-                {filter === "all" && <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1">Driver routes</p>}
-                {filteredDriverRoutes.map((r) => (
-                  <DriverRouteCard key={r.id} route={r} onSelect={(route) => navigate(`/predict?routeId=${route.id}&type=driver`)} />
-                ))}
-              </div>
-            )}
-
-            {filteredCommuterRoutes.length > 0 && (
-              <div className="space-y-2">
-                {filter === "all" && <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1 pt-2">Community routes</p>}
-                {filteredCommuterRoutes.map((r) => (
-                  <CommuterRouteCard key={r.id} route={r} onSelect={(route) => navigate(`/predict?routeId=${route.id}&type=commuter`)} />
-                ))}
-              </div>
-            )}
-          </>
         )}
+
+        {/* Filter pills */}
+        <div className="bg-white border-[1.5px] border-slate-200 rounded-lg p-1.5">
+          <RouteTypeToggle value={filter} onChange={setFilter} driverCount={driverRoutes.length} commuterCount={commuterRoutes.length} />
+        </div>
+
+        {/* Route list */}
+        <div className="space-y-6 pt-2">
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <LoadingSpinner message="Loading routes…" />
+            </div>
+          ) : totalFiltered === 0 ? (
+            <EmptyState
+              title={search ? "No matches found" : "No community routes"}
+              message={search ? "Try searching for a different signboard or landmark." : "Be the first to share a guide for this area!"}
+              icon={search ? undefined : <Plus className="w-12 h-12 text-slate-300" />}
+              action={
+                !search &&
+                filter !== "driver" && (
+                  <button
+                    onClick={() => navigate("/commuter/add-route")}
+                    className="w-full bg-ink text-white py-3 rounded-xl text-[10px] font-display uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                  >
+                    Add Route Guide
+                  </button>
+                )
+              }
+            />
+          ) : (
+            <>
+              {filteredDriverRoutes.length > 0 && (
+                <div className="space-y-3">
+                  {filter === "all" && <p className="section-label pl-1">Driver routes</p>}
+                  {filteredDriverRoutes.map((r) => (
+                    <DriverRouteCard key={r.id} route={r} onSelect={(id) => navigate(`/predict?routeId=${id}&type=driver`)} />
+                  ))}
+                </div>
+              )}
+
+              {filteredCommuterRoutes.length > 0 && (
+                <div className="space-y-3">
+                  {filter === "all" && <p className="section-label pl-1">Community routes</p>}
+                  {filteredCommuterRoutes.map((r) => (
+                    <CommuterRouteCard key={r.id} route={r} onSelect={(id) => navigate(`/predict?routeId=${id}&type=commuter`)} />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -293,9 +302,9 @@ export default function ExplorePage() {
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
-      <span className="text-[10px] font-medium text-slate-700">{label}</span>
+    <div className="flex items-center gap-2.5">
+      <span className="w-2.5 h-2.5 rounded-[4px] border border-ink/20" style={{ backgroundColor: color }} />
+      <span className="text-[10px] font-bold text-ink uppercase tracking-tight">{label}</span>
     </div>
-  )
+  );
 }

@@ -12,32 +12,26 @@ const ROLES: {
   label: string;
   description: string;
   icon: ReactNode;
-  color: string;
-  activeColor: string;
 }[] = [
   {
     value: "commuter",
     label: "Commuter",
-    description: "Find routes, view ETAs, and share tips with the community.",
-    icon: <User className="w-7 h-7" />,
-    color: "border-slate-200 bg-white text-slate-700",
-    activeColor: "border-primary-500 bg-primary-50 text-primary-800 ring-2 ring-primary-500/20",
+    description: "Look for routes and real-time ETAs.",
+    icon: <User className="w-8 h-8" />,
   },
   {
     value: "driver",
     label: "Driver",
-    description: "Register your route, set your schedule, and go active.",
-    icon: <TramFront className="w-7 h-7" />,
-    color: "border-slate-200 bg-white text-slate-700",
-    activeColor: "border-amber-500 bg-amber-50 text-amber-800 ring-2 ring-amber-500/20",
+    description: "Share your route and go active.",
+    icon: <TramFront className="w-8 h-8" />,
   },
 ];
 
 export default function RoleSelector({ selected, onChange }: RoleSelectorProps) {
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium text-slate-600">I am a…</p>
-      <div className="grid grid-cols-2 gap-3">
+      <p className="section-label pl-1">I am a...</p>
+      <div className="grid grid-cols-2 gap-4">
         {ROLES.map((role) => {
           const isSelected = selected === role.value;
           return (
@@ -46,17 +40,31 @@ export default function RoleSelector({ selected, onChange }: RoleSelectorProps) 
               type="button"
               onClick={() => onChange(role.value)}
               className={`
-                flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center
-                transition-all duration-150 cursor-pointer select-none
-                ${isSelected ? role.activeColor : role.color}
-                hover:border-slate-300
+                flex flex-col items-start gap-4 rounded-xl border-[2px] p-5 text-left
+                transition-all duration-200 cursor-pointer select-none relative overflow-hidden
+                ${isSelected 
+                  ? "border-primary-500 bg-white shadow-[6px_6px_0px_0px_rgba(232,50,26,0.1)]" 
+                  : "border-slate-200 bg-white hover:border-ink hover:bg-surface/50 opacity-100"}
               `}
             >
-              <span className={isSelected && role.value === "commuter" ? "text-primary-600" : isSelected ? "text-amber-600" : "text-slate-400"}>
+              <div className={`
+                w-12 h-12 rounded-lg flex items-center justify-center transition-colors
+                ${isSelected ? "bg-primary-500 text-white" : "bg-surface text-muted"}
+              `}>
                 {role.icon}
-              </span>
-              <span className="text-sm font-semibold">{role.label}</span>
-              <span className="text-xs leading-snug opacity-70">{role.description}</span>
+              </div>
+              <div>
+                <span className={`block text-lg font-display uppercase tracking-tight leading-none mb-1 ${isSelected ? "text-primary-500" : "text-ink"}`}>
+                  {role.label}
+                </span>
+                <span className="text-[10px] font-bold text-muted uppercase tracking-tight leading-tight block">
+                  {role.description}
+                </span>
+              </div>
+              
+              {isSelected && (
+                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-500" />
+              )}
             </button>
           );
         })}

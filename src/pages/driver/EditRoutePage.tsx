@@ -11,8 +11,9 @@ import StopSearchInput from '@/components/map/StopSearchInput'
 import RouteMapPreview from '@/components/map/RouteMapPreview'
 import LocationPermissionBanner from '@/components/common/LocationPermissionBanner'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { ArrowLeft, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import type { VehicleType, Stop, DriverPricing } from '@/types'
+import TopBar from '@/components/common/TopBar'
 
 export default function EditRoutePage() {
   const { id } = useParams<{ id: string }>()
@@ -93,24 +94,18 @@ export default function EditRoutePage() {
       <div className="flex flex-col items-center justify-center min-h-screen gap-3">
         <p className="text-slate-500">Route not found.</p>
         <button onClick={() => navigate('/driver')} className="text-primary-600 text-sm font-semibold">
-          ← Back to dashboard
+          Back to dashboard
         </button>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white px-4 pt-14 pb-4 shadow-sm flex items-center gap-3">
-        <button type="button" onClick={() => navigate('/driver')}
-          className="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors -ml-1">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="text-lg font-bold text-slate-800">Edit route</h1>
-          <p className="text-xs text-slate-400 truncate max-w-[200px]">{route.name}</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-surface">
+      <TopBar 
+        title="Edit Route" 
+        onBack={() => navigate('/driver')}
+      />
 
       <div className="px-4 py-5 max-w-lg mx-auto space-y-5">
         <FormField label="Route name" value={name} onChange={(e) => setName(e.target.value)} />

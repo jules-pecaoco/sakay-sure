@@ -36,19 +36,22 @@ export default function StopSearchInput({ onSelect, placeholder = "Search stop, 
   };
 
   return (
-    <div className="stop-search-input w-full relative">
+    <div className="stop-search-input w-full relative z-50">
       <SearchBox
         accessToken={import.meta.env.VITE_MAPBOX_TOKEN}
         options={{
           country: "PH",
-          proximity: proximity ? [proximity[0], proximity[1]] : [123.8854, 10.3157],
+          proximity: proximity ? [proximity[0], proximity[1]] : [120.9842, 14.5995], // Default to Manila
           limit: 8,
         }}
         value={value}
         onChange={(val) => setValue(val)}
         onRetrieve={handleRetrieve}
+        interceptSearch={(query) => {
+          if (query.length < 3) return "";
+          return query;
+        }}
         placeholder={placeholder}
-        // Tailwind/styling support: You might need to adjust mapbox-search-box CSS vars here
         theme={{
           variables: {
             fontFamily: "inherit",

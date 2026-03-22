@@ -7,28 +7,34 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-slate-100 flex flex-col">
-      {/* Header */}
-      <header className="px-6 pt-10 pb-2 flex flex-col items-center gap-1">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm">
-            <Navigation className="w-5 h-5 text-white" />
+    <div className="min-h-screen bg-surface flex flex-col">
+      {/* Header — Jeepney Bold Style */}
+      <header className="px-6 pt-12 pb-8 flex flex-col items-center bg-primary-500 clip-bottom-slant">
+        <div className="flex items-center gap-2.5">
+          <div className="w-10 h-10 rounded-lg bg-ink flex items-center justify-center shadow-lg border border-accent-500/20">
+            <Navigation className="w-6 h-6 text-accent-500" fill="currentColor" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-800">
-            SakaySure
-          </span>
+          <h1 className="text-3xl font-display uppercase tracking-tight text-white leading-none">
+            Sakay<span className="text-accent-500">Sure</span>
+          </h1>
         </div>
-        <p className="text-xs text-slate-400 tracking-wide">
-          Hybrid Predictive Transport
+        <p className="mt-3 text-[10px] font-semibold text-white/90 uppercase tracking-[0.2em]">
+          Reliable Commute Everywhere
         </p>
       </header>
 
-      {/* Card */}
-      <main className="flex-1 flex items-start justify-center px-4 pt-8 pb-12">
-        <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl shadow-slate-200/60 p-7">
+      {/* Card — Flat Style */}
+      <main className="flex-1 flex items-start justify-center px-4 -mt-4 pb-12">
+        <div className="w-full max-w-sm bg-white border-[1.5px] border-ink rounded-xl shadow-[6px_6px_0px_0px_rgba(26,18,8,0.05)] p-7">
           {children}
         </div>
       </main>
+
+      <style>{`
+        .clip-bottom-slant {
+          clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+      `}</style>
     </div>
   )
 }

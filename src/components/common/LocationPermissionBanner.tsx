@@ -14,12 +14,14 @@ export default function LocationPermissionBanner({
 
   if (status === 'denied') {
     return (
-      <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
-        <MapPin className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+      <div className="flex items-start gap-4 bg-ink border-[1.5px] border-primary-500 rounded-xl px-5 py-4 shadow-lg">
+        <div className="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center shrink-0 shadow-inner mt-0.5">
+          <MapPin className="w-6 h-6 text-accent-500" fill="currentColor" strokeWidth={2.5} />
+        </div>
         <div>
-          <p className="text-xs font-semibold text-amber-700">Location access denied</p>
-          <p className="text-xs text-amber-600 mt-0.5 leading-relaxed">
-            Enable location in your browser settings to center the map on your current position.
+          <p className="text-[11px] font-display text-white uppercase tracking-wider mb-1">Enable Location Access</p>
+          <p className="text-[10px] font-medium text-white/60 leading-tight">
+            Enable location in your browser settings to see your real-time position on the map.
           </p>
         </div>
       </div>
@@ -27,27 +29,34 @@ export default function LocationPermissionBanner({
   }
 
   return (
-    <div className="flex items-center gap-3 bg-primary-50 border border-primary-200 rounded-2xl px-4 py-3">
-      <MapPin className="w-5 h-5 text-primary-600 shrink-0" />
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-primary-700">Use your location</p>
-        <p className="text-xs text-primary-500 mt-0.5">
-          Centers the map and improves stop suggestions
+    <div className="flex items-center gap-4 bg-ink border-[1.5px] border-primary-500 rounded-xl px-4 py-4 shadow-lg overflow-hidden relative">
+      <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      
+      <div className="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center shrink-0 shadow-inner z-10">
+        <MapPin className="w-6 h-6 text-accent-500" fill="currentColor" strokeWidth={2.5} />
+      </div>
+      
+      <div className="flex-1 min-w-0 z-10">
+        <p className="text-[11px] font-display text-white uppercase tracking-wider mb-0.5">Enable Map View?</p>
+        <p className="text-[10px] font-medium text-white/50 leading-tight uppercase tracking-tight">
+          Centers map & improves suggestions
         </p>
       </div>
+
       <button
         type="button"
         onClick={onRequest}
         disabled={status === 'requesting'}
-        className="shrink-0 rounded-xl bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-600 transition-colors disabled:opacity-60 flex items-center gap-1.5"
+        className="
+          shrink-0 rounded-lg bg-primary-500 px-5 py-2 text-[10px] font-display uppercase tracking-widest text-white 
+          border-b-[3px] border-primary-700 shadow-md transition-all active:border-b-0 active:translate-y-0.5
+          disabled:opacity-60 z-10 font-bold
+        "
       >
         {status === 'requesting' ? (
-          <>
-            <span className="w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
-            Locating…
-          </>
+          <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
         ) : (
-          'Allow'
+          'Enable'
         )}
       </button>
     </div>

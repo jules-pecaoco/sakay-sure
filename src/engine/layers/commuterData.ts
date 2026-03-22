@@ -25,7 +25,7 @@ export function commuterDataLayer(
 
   const helpfulRatio = totalVotes > 0 ? helpfulVotes / totalVotes : 0.5
 
-  // More helpful routes → slightly more confidence in shorter ETA
+  // More helpful routes slightly more confidence in shorter ETA
   const etaAdjustment = helpfulRatio > 0.6 ? 0.9 : helpfulRatio < 0.3 ? 1.1 : 1
   const vehicleBoost = commuterRoutes.length >= 3 ? 1 : 0
 

@@ -8,32 +8,30 @@ import FormField from "@/components/common/FormField";
 import StopSearchInput from "@/components/map/StopSearchInput";
 import RouteMapPreview from "@/components/map/RouteMapPreview";
 import LocationPermissionBanner from "@/components/common/LocationPermissionBanner";
-import { Check, X, ChevronUp, ChevronDown, Megaphone, Banknote, Snowflake, AlertTriangle } from "lucide-react";
+import { Check, X, ChevronUp, ChevronDown, Megaphone, Banknote, Snowflake, AlertTriangle, Navigation, CreditCard } from "lucide-react";
 import type { Stop, CommuterRouteTips } from "@/types";
 
 // ─── Step bar ─────────────────────────────────────────────────────────────────
 
-const STEPS = ["Route", "Stops", "Tips"] as const;
+const STEPS = ["Basics", "Stops", "Tips"] as const;
 type StepIndex = 0 | 1 | 2;
 
 function StepBar({ current }: { current: StepIndex }) {
   return (
-    <div className="flex items-center gap-2 mb-6">
+    <div className="flex items-center gap-3 mb-8 bg-white border-[1.5px] border-slate-200 rounded-xl p-3 shadow-sm">
       {STEPS.map((label, i) => {
         const done = i < current;
         const active = i === current;
         return (
-          <div key={label} className="flex items-center gap-2 flex-1">
-            <div
-              className={`
-                flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0
-                ${done ? "bg-primary-500 text-white" : active ? "bg-primary-100 text-primary-600 ring-2 ring-primary-500" : "bg-slate-100 text-slate-400"}
-              `}
-            >
-              {done ? <Check className="w-3.5 h-3.5" /> : i + 1}
+          <div key={label} className="flex items-center gap-2 flex-1 relative">
+             <div className={`
+              flex items-center justify-center w-8 h-8 rounded-lg text-[10px] font-display shrink-0 border-[1.5px] transition-all
+              ${done ? 'bg-primary-500 border-ink text-white shadow-sm' : active ? 'bg-white border-primary-500 text-primary-500 shadow-md scale-110' : 'bg-surface border-slate-200 text-muted'}
+            `}>
+              {done ? <Check className="w-4 h-4" strokeWidth={3} /> : i + 1}
             </div>
-            <span className={`text-xs font-medium ${active ? "text-primary-600" : done ? "text-slate-500" : "text-slate-400"}`}>{label}</span>
-            {i < STEPS.length - 1 && <div className={`flex-1 h-px ${done ? "bg-primary-300" : "bg-slate-200"}`} />}
+            <span className={`text-[9px] font-display uppercase tracking-widest hidden sm:block ${active ? 'text-ink' : done ? 'text-muted' : 'text-muted/50'}`}>{label}</span>
+            {i < STEPS.length - 1 && <div className={`flex-1 h-[2px] rounded-full mx-1 ${done ? 'bg-primary-500' : "bg-slate-200"}`} />}
           </div>
         );
       })}
@@ -55,10 +53,10 @@ function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center justify-between gap-4 p-4 rounded-xl border-[1.5px] border-slate-100 bg-surface/30">
       <div>
-        <p className="text-sm font-medium text-slate-700">{label}</p>
-        {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
+        <p className="text-[10px] font-display uppercase tracking-widest text-ink leading-tight mb-1">{label}</p>
+        {description && <p className="text-[10px] font-bold text-muted uppercase tracking-tight leading-none">{description}</p>}
       </div>
       <button
         type="button"
@@ -66,15 +64,15 @@ function Toggle({
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`
-          relative w-11 h-6 rounded-full transition-colors shrink-0
-          ${checked ? "bg-primary-500" : "bg-slate-200"}
+          relative w-12 h-7 rounded-lg transition-all shrink-0 border-[1.5px]
+          ${checked ? "bg-primary-500 border-ink" : "bg-slate-200 border-slate-300"}
         `}
       >
         <span
           className={`
-            absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm
+            absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-[4px] shadow-sm
             transition-transform duration-200
-            ${checked ? "translate-x-5" : "translate-x-0"}
+            ${checked ? "translate-x-5 bg-accent-500" : "translate-x-0"}
           `}
         />
       </button>
@@ -193,23 +191,23 @@ export default function AddCommuterRouteForm() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div className="p-4 max-w-lg mx-auto space-y-4">
+    <div className="p-4 max-w-lg mx-auto space-y-6">
       <StepBar current={step} />
 
       {/* ── Step 1: Route basics ─────────────────────────────────────────────── */}
       {step === 0 && (
-        <div className="space-y-5">
-          <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4">
-            <p className="text-xs font-semibold text-primary-700 mb-1 flex items-center gap-1.5">
-              <Megaphone className="w-3.5 h-3.5" /> Community route
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+          <div className="bg-ink border-[1.5px] border-accent-500 rounded-xl p-5 shadow-lg">
+            <p className="text-[11px] font-display text-accent-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <Megaphone className="w-4 h-4" fill="currentColor" /> Community Signboard
             </p>
-            <p className="text-xs text-primary-600 leading-relaxed">
-              Share a route you regularly take. Other commuters will see it and can vote if it's helpful — even when no drivers are registered yet.
+            <p className="text-[10px] font-medium text-white/70 leading-relaxed uppercase tracking-tight">
+              Share a route you regularly take. Other commuters can vote for this guide!
             </p>
           </div>
 
           <FormField
-            label="Route name"
+            label="Route Signage"
             placeholder="e.g. IT Park – Carbon Market"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -221,93 +219,105 @@ export default function AddCommuterRouteForm() {
             onClick={() => {
               if (validateStep1()) setStep(1);
             }}
-            className="w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all"
+            className="
+              w-full rounded-xl bg-primary-500 py-4 text-[12px] font-display uppercase tracking-widest text-white
+              border-b-[4px] border-primary-700 shadow-md transition-all mt-4
+              hover:bg-primary-600 active:border-b-0 active:translate-y-1 active:shadow-none
+            "
           >
-            Next: Add stops →
+            Add Stops
           </button>
         </div>
       )}
 
       {/* ── Step 2: Stops ────────────────────────────────────────────────────── */}
       {step === 1 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-slate-700">Search & add stops</p>
-            <p className="text-xs text-slate-400">Add stops in order — start to end. You can reorder them after adding.</p>
-            <LocationPermissionBanner status={locationStatus} onRequest={requestLocation} />
-            <StopSearchInput onSelect={handleAddStop} proximity={userLocation ? [userLocation.lng, userLocation.lat] : undefined} />
-            {stopError && <p className="text-xs text-red-500">{stopError}</p>}
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+           <LocationPermissionBanner status={locationStatus} onRequest={requestLocation} />
+          
+          <div className="space-y-3">
+            <p className="section-label pl-1">Search Landmarks</p>
+            <div className="border-[1.5px] border-slate-200 rounded-xl focus-within:border-ink transition-all">
+              <StopSearchInput onSelect={handleAddStop} proximity={userLocation ? [userLocation.lng, userLocation.lat] : undefined} />
+            </div>
+            {stopError && <p className="text-[10px] font-bold text-primary-500 uppercase tracking-tight pl-1">{stopError}</p>}
           </div>
 
           {stops.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                {stops.length} stop{stops.length !== 1 ? "s" : ""} added
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold text-muted uppercase tracking-wider pl-1 font-display">
+                {stops.length} Signboard{stops.length !== 1 ? "s" : ""} added
               </p>
-              {stops.map((stop, i) => (
-                <div key={stop.id} className="flex items-center gap-2 bg-white rounded-xl border border-slate-200 px-3 py-2.5">
-                  <span
-                    className={`
-                      text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shrink-0
-                      ${i === 0 ? "bg-green-100 text-green-700" : i === stops.length - 1 ? "bg-red-100 text-red-600" : "bg-primary-100 text-primary-600"}
-                    `}
-                  >
-                    {i === 0 ? "S" : i === stops.length - 1 ? "E" : i}
-                  </span>
-                  <span className="flex-1 text-sm text-slate-700 truncate">{stop.name.split(",")[0]}</span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => handleMoveStop(stop.id, "up")}
-                      disabled={i === 0}
-                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25"
-                      aria-label="Move up"
-                    >
-                      <ChevronUp className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleMoveStop(stop.id, "down")}
-                      disabled={i === stops.length - 1}
-                      className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-25"
-                      aria-label="Move down"
-                    >
-                      <ChevronDown className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveStop(stop.id)}
-                      className="p-1 text-red-400 hover:text-red-600"
-                      aria-label="Remove"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+              <div className="space-y-3">
+                {stops.map((stop, i) => (
+                  <div key={stop.id} className="flex items-center gap-3 bg-white rounded-xl border-[1.5px] border-ink px-4 py-3.5 shadow-[4px_4px_0px_0px_rgba(26,18,8,0.05)]">
+                    <div className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center text-[10px] font-display shrink-0 shadow-sm
+                      ${i === 0 ? 'bg-primary-500 border-ink text-white' : i === stops.length - 1 ? 'bg-accent-500 border-ink text-ink font-bold' : 'bg-surface border-slate-200 text-ink'}`}>
+                      {i === 0 ? 'START' : i === stops.length - 1 ? 'END' : i}
+                    </div>
+                    <span className="flex-1 text-sm font-bold text-ink truncate uppercase tracking-tight">{stop.name.split(",")[0]}</span>
+                    <div className="flex items-center gap-1.5 pl-2">
+                      <button
+                        type="button"
+                        onClick={() => handleMoveStop(stop.id, "up")}
+                        disabled={i === 0}
+                        className="p-1.5 rounded-lg text-slate-400 hover:bg-surface hover:text-ink disabled:opacity-25 transition-all"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveStop(stop.id, "down")}
+                        disabled={i === stops.length - 1}
+                        className="p-1.5 rounded-lg text-slate-400 hover:bg-surface hover:text-ink disabled:opacity-25 transition-all"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                      <div className="w-px h-4 bg-slate-200 mx-0.5" />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveStop(stop.id)}
+                        className="p-1.5 rounded-lg text-primary-400 hover:bg-primary-50 hover:text-primary-600 transition-all"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
-          {fetchingGeometry && <p className="text-xs text-slate-400 text-center animate-pulse">Drawing route line…</p>}
+          {fetchingGeometry && (
+             <div className="flex justify-center items-center gap-2">
+                <span className="w-4 h-4 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
+                <p className="text-[10px] font-bold text-muted uppercase tracking-widest leading-none">Drawing route line…</p>
+             </div>
+          )}
 
-          <RouteMapPreview stops={stops} geometry={geometry} userLocation={userLocation} />
+          <div className="border-[2.5px] border-ink rounded-xl overflow-hidden shadow-md">
+            <RouteMapPreview stops={stops} geometry={geometry} userLocation={userLocation} className="h-60" />
+          </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <button
               type="button"
               onClick={() => setStep(0)}
-              className="flex-1 rounded-xl border border-slate-200 py-3.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all"
+              className="flex-1 rounded-xl border-[1.5px] border-slate-200 py-4 text-[11px] font-display uppercase tracking-widest text-muted hover:bg-white hover:border-ink hover:text-ink transition-all"
             >
-              ← Back
+              Balik
             </button>
             <button
               type="button"
               onClick={() => {
                 if (validateStep2()) setStep(2);
               }}
-              className="flex-1 rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all"
+              className="
+                flex-1 rounded-xl bg-ink py-4 text-[11px] font-display uppercase tracking-widest text-white shadow-md
+                border-b-[4px] border-slate-700 active:border-b-0 active:translate-y-1 active:shadow-none transition-all
+              "
             >
-              Next: Add tips →
+              Tips/Suggestions
             </button>
           </div>
         </div>
@@ -315,94 +325,87 @@ export default function AddCommuterRouteForm() {
 
       {/* ── Step 3: Tips & useful info ───────────────────────────────────────── */}
       {step === 2 && (
-        <div className="space-y-5">
-          <p className="text-xs text-slate-400 leading-relaxed">
-            All fields are optional, but the more info you share, the more useful this route becomes for other commuters.
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+          <p className="text-[10px] font-bold text-muted uppercase tracking-widest text-center px-4 leading-relaxed">
+            All fields are optional, but sharing specific tips helps the community!
           </p>
 
           {/* Fare */}
-          <FormField label="Typical fare (₱)" type="number" placeholder="e.g. 13" value={fare} onChange={(e) => setFare(e.target.value)} />
+          <FormField label="Typical Fare (₱)" type="number" placeholder="e.g. 13" value={fare} onChange={(e) => setFare(e.target.value)} />
 
           {/* Toggles */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-4">
-            <Toggle label="Cash only" description="No GCash or card — bring exact change" checked={isCashOnly} onChange={setIsCashOnly} />
-            <div className="h-px bg-slate-100" />
-            <Toggle label="Air-conditioned" description="Vehicle has working A/C" checked={hasAC} onChange={setHasAC} />
+          <div className="space-y-3">
+             <Toggle label="Cash Only sa App" description="No GCash - exact change lang" checked={isCashOnly} onChange={setIsCashOnly} />
+             <Toggle label="Air-conditioned" description="May A/C ang unit" checked={hasAC} onChange={setHasAC} />
           </div>
 
           {/* Hazards */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-slate-700">Hazards or warnings</label>
+            <label className="section-label pl-1">Hazards or Warnings</label>
             <input
               type="text"
               placeholder="e.g. Flooded at Colon during rain"
               value={hazards}
               onChange={(e) => setHazards(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
+              className="w-full rounded-xl border-[1.5px] border-slate-200 bg-surface/30 px-4 py-3.5 text-sm font-bold text-ink outline-none focus:border-ink focus:bg-white transition-all uppercase placeholder:normal-case placeholder:font-medium"
             />
           </div>
 
           {/* Notes */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-slate-700">Additional notes</label>
+            <label className="section-label pl-1">Additional Notes</label>
             <textarea
               placeholder="e.g. Jeepneys only run until 9 PM. Ask driver for Carbon stop."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15 resize-none"
+              className="w-full rounded-xl border-[1.5px] border-slate-200 bg-surface/30 px-4 py-3.5 text-sm font-bold text-ink outline-none focus:border-ink focus:bg-white transition-all resize-none placeholder:font-medium"
             />
           </div>
 
-          {/* Summary */}
-          <div className="bg-primary-50 border border-primary-200 rounded-2xl p-4 space-y-1.5">
-            <p className="text-xs font-semibold text-primary-600 uppercase tracking-wider">Summary</p>
-            <p className="text-sm font-semibold text-slate-800">{name}</p>
-            <p className="text-xs text-slate-500">{stops.length} stops</p>
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {fare && <span className="text-xs bg-white rounded-full px-2 py-0.5 text-slate-600 border border-primary-200">₱{fare}</span>}
-              {isCashOnly && (
-                <span className="text-xs bg-white rounded-full px-2 py-0.5 text-amber-600 border border-amber-200 inline-flex items-center gap-1">
-                  <Banknote className="w-3 h-3" /> Cash only
-                </span>
-              )}
-              {hasAC && (
-                <span className="text-xs bg-white rounded-full px-2 py-0.5 text-primary-600 border border-primary-200 inline-flex items-center gap-1">
-                  <Snowflake className="w-3 h-3" /> A/C
-                </span>
-              )}
-              {hazards && (
-                <span className="text-xs bg-white rounded-full px-2 py-0.5 text-amber-700 border border-amber-200 inline-flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" /> {hazards}
-                </span>
-              )}
+          {/* Summary Signboard */}
+          <div className="bg-accent-500 border-[2px] border-ink rounded-xl p-5 space-y-4 shadow-[6px_6px_0px_0px_rgba(26,18,8,0.05)]">
+            <p className="section-label !text-ink !font-display">Community Guide Summary</p>
+            <div className="space-y-3">
+               <h3 className="text-2xl font-display text-ink uppercase tracking-tight leading-tight">{name}</h3>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <SummaryItem icon={<Navigation className="w-3 h-3" />} text={`${stops.length} STOPS`} />
+                  {fare && <SummaryItem icon={<Banknote className="w-3 h-3" />} text={`₱${fare}`} />}
+                  {isCashOnly && <SummaryItem icon={<CreditCard className="w-3 h-3" />} text="CASH ONLY" />}
+                  {hasAC && <SummaryItem icon={<Snowflake className="w-3 h-3" />} text="A/C" />}
+                  {hazards && <SummaryItem icon={<AlertTriangle className="w-3 h-3" />} text="WARNING" />}
+                </div>
             </div>
           </div>
 
-          {submitError && <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">{submitError}</div>}
+          {submitError && <div className="rounded-xl bg-primary-100 border-[1.5px] border-primary-500 px-4 py-3 text-[10px] font-bold text-primary-600 uppercase tracking-tight">{submitError}</div>}
 
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="flex-1 rounded-xl border border-slate-200 py-3.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all"
+              className="flex-1 rounded-xl border-[1.5px] border-slate-200 py-4 text-[11px] font-display uppercase tracking-widest text-muted hover:bg-white hover:border-ink hover:text-ink transition-all"
             >
-              ← Back
+              Balik
             </button>
             <button
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white hover:bg-primary-600 active:scale-[.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+               className="
+                flex-1 rounded-xl bg-primary-500 py-4 text-[11px] font-display uppercase tracking-widest text-white shadow-md
+                border-b-[4px] border-primary-700 active:border-b-0 active:translate-y-1 active:shadow-none transition-all
+                disabled:opacity-60 flex items-center justify-center gap-2
+              "
             >
               {submitting ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Sharing…
+                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  Sige lang…
                 </>
               ) : (
                 <>
-                  <Check className="w-4 h-4" /> Share route
+                  <Check className="w-4 h-4" strokeWidth={3} /> Show in app
                 </>
               )}
             </button>
@@ -411,4 +414,13 @@ export default function AddCommuterRouteForm() {
       )}
     </div>
   );
+}
+
+function SummaryItem({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <div className="bg-white/30 border border-ink/10 rounded-lg px-2 py-1 flex items-center gap-1.5">
+      <span className="text-ink">{icon}</span>
+      <span className="text-[9px] font-bold text-ink uppercase tracking-tight">{text}</span>
+    </div>
+  )
 }

@@ -20,7 +20,6 @@ export default function ActiveToggle({ route }: ActiveToggleProps) {
     try {
       await setRouteActive(route.id, next)
       if (next) {
-        // Use first stop coordinates as initial position, fallback to Cebu
         const pos = route.stops[0]?.coordinates ?? { lng: 123.8854, lat: 10.3157 }
         await setDriverActive(user.uid, route.id, pos)
       } else {
@@ -36,22 +35,17 @@ export default function ActiveToggle({ route }: ActiveToggleProps) {
 
   return (
     <div
-      className={`
-        flex items-center justify-between rounded-2xl p-4 border-2 transition-colors
-        ${active
-          ? 'bg-green-50 border-green-300'
-          : 'bg-slate-50 border-slate-200'}
-      `}
+      className="flex items-center justify-between py-2 transition-all"
     >
-      <div className="space-y-0.5">
-        <p className={`text-sm font-semibold flex items-center gap-1.5 ${active ? 'text-green-700' : 'text-slate-600'}`}>
-          <span className={`w-2 h-2 rounded-full shrink-0 ${active ? 'bg-green-500 animate-pulse' : 'bg-slate-400'}`} />
-          {active ? 'Currently active' : 'Inactive'}
+      <div className="space-y-1">
+        <p className={`text-[10px] font-display uppercase tracking-widest flex items-center gap-2 ${active ? 'text-green-600' : 'text-muted'}`}>
+          <span className={`w-2 h-2 rounded-full shrink-0 ${active ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
+          {active ? 'Currently On Route' : 'Signboard Offline'}
         </p>
-        <p className="text-xs text-slate-400">
+        <p className="text-[10px] font-bold text-ink uppercase tracking-tight">
           {active
-            ? 'Commuters can see you on the map'
-            : 'Toggle on when you start your route'}
+            ? 'Commuters can see you'
+            : 'Toggle on when you start driving'}
         </p>
       </div>
 
@@ -61,24 +55,23 @@ export default function ActiveToggle({ route }: ActiveToggleProps) {
         disabled={loading}
         aria-pressed={active}
         className={`
-          relative w-14 h-7 rounded-full transition-colors duration-200 focus:outline-none
-          focus-visible:ring-2 focus-visible:ring-offset-2
+          relative w-14 h-8 rounded-lg transition-all duration-200 focus:outline-none border-[1.5px]
           disabled:opacity-50 disabled:cursor-not-allowed
           ${active
-            ? 'bg-green-500 focus-visible:ring-green-500'
-            : 'bg-slate-300 focus-visible:ring-slate-400'}
+            ? 'bg-primary-500 border-ink shadow-sm'
+            : 'bg-slate-200 border-slate-300'}
         `}
       >
-        <span
+        <div
           className={`
-            absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-sm
-            transition-transform duration-200
-            ${active ? 'translate-x-7' : 'translate-x-0'}
+            absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-[6px] border border-ink/10
+            transition-all duration-200 shadow-sm
+            ${active ? 'translate-x-6 bg-accent-500' : 'translate-x-0'}
           `}
         />
         {loading && (
           <span className="absolute inset-0 flex items-center justify-center">
-            <span className="w-3 h-3 border border-white/60 border-t-white rounded-full animate-spin" />
+            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           </span>
         )}
       </button>

@@ -22,42 +22,38 @@ export default function PricingFields({ pricing, onChange }: PricingFieldsProps)
   }
 
   return (
-    <div className="space-y-3">
-      {/* Toggle */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-4">
+      {/* Toggle — Signboard Style */}
+      <div className="flex items-center justify-between bg-white border-[1.5px] border-slate-200 rounded-xl p-4 shadow-sm">
         <div>
-          <p className="text-sm font-medium text-slate-700">Fare information</p>
-          <p className="text-xs text-slate-400 mt-0.5">Optional — helps commuters budget their trip</p>
+          <p className="text-[10px] font-display uppercase tracking-widest text-ink">Fare Details</p>
+          <p className="text-[10px] font-bold text-muted uppercase tracking-tight mt-0.5">Optional Community Guide</p>
         </div>
         <button
           type="button"
           role="switch"
           aria-checked={enabled}
           onClick={() => toggle(!enabled)}
-          className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
-            enabled ? 'bg-primary-500' : 'bg-slate-200'
+          className={`relative w-12 h-7 rounded-lg transition-all shrink-0 border-[1.5px] ${
+            enabled ? 'bg-primary-500 border-ink' : 'bg-slate-200 border-slate-300'
           }`}
         >
           <span
-            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-              enabled ? 'translate-x-5' : 'translate-x-0'
+            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-[4px] shadow-sm transition-transform duration-200 ${
+              enabled ? 'translate-x-5 bg-accent-500' : 'translate-x-0'
             }`}
           />
         </button>
       </div>
 
-      {/* Fields — only shown when enabled */}
+      {/* Fields — Flat Card Style */}
       {enabled && (
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+        <div className="bg-white border-[1.5px] border-ink rounded-xl p-5 space-y-4 shadow-[4px_4px_0px_0px_rgba(26,18,8,0.05)]">
           {/* Minimum / base fare */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-600">
-              Minimum fare (₱)
-            </label>
+            <label className="section-label pl-0.5">Boarding Fare (₱)</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium">
-                ₱
-              </span>
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-ink font-bold">₱</span>
               <input
                 type="number"
                 min={0}
@@ -65,50 +61,40 @@ export default function PricingFields({ pricing, onChange }: PricingFieldsProps)
                 placeholder="13"
                 value={pricing?.minFare ?? ''}
                 onChange={(e) => update('minFare', e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white pl-7 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
+                className="w-full rounded-lg border-[1.5px] border-slate-200 bg-surface/30 pl-8 pr-4 py-3 text-sm text-ink font-bold outline-none focus:border-ink focus:bg-white transition-all"
               />
             </div>
-            <p className="text-xs text-slate-400">Base boarding fare for the first stop</p>
           </div>
 
           {/* Per-stop fare */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-600">
-              Additional fare per stop (₱) <span className="text-slate-400 font-normal">— optional</span>
-            </label>
+            <label className="section-label pl-0.5">Successive Stop/KM (₱)</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium">
-                ₱
-              </span>
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-ink font-bold">₱</span>
               <input
                 type="number"
                 min={0}
                 step={0.5}
-                placeholder="Leave blank if flat rate"
+                placeholder="0.00"
                 value={pricing?.perStopFare ?? ''}
                 onChange={(e) => update('perStopFare', e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white pl-7 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15"
+                className="w-full rounded-lg border-[1.5px] border-slate-200 bg-surface/30 pl-8 pr-4 py-3 text-sm text-ink font-bold outline-none focus:border-ink focus:bg-white transition-all"
               />
             </div>
-            <p className="text-xs text-slate-400">Charged per additional stop after boarding</p>
+            <p className="text-[9px] font-bold text-muted uppercase tracking-tight pl-1">Leave blank if flat rate</p>
           </div>
 
-          {/* Live preview */}
+          {/* Live preview — Signboard Badge */}
           {pricing && pricing.minFare > 0 && (
-            <div className="bg-white border border-primary-100 rounded-xl px-3 py-2.5 space-y-1">
-              <p className="text-[10px] font-semibold text-primary-600 uppercase tracking-wider">
-                Fare preview
-              </p>
-              <p className="text-xs text-slate-600">
-                Boarding: <span className="font-semibold text-slate-800">₱{pricing.minFare}</span>
+            <div className="bg-accent-500 border-[1.5px] border-ink rounded-lg px-4 py-3 flex flex-col gap-1 items-center justify-center text-center mt-2">
+              <p className="section-label !text-ink !font-display !text-[9px] mb-1">Route Fare Signboard</p>
+              <p className="text-xl font-display text-ink uppercase leading-none tracking-tighter">
+                ₱{pricing.minFare} <span className="text-[10px] font-bold">Base</span>
               </p>
               {pricing.perStopFare && (
-                <p className="text-xs text-slate-600">
-                  + <span className="font-semibold text-slate-800">₱{pricing.perStopFare}</span> per stop after
+                <p className="text-[10px] font-bold text-ink uppercase tracking-tight mt-1">
+                  + ₱{pricing.perStopFare} per succeeding
                 </p>
-              )}
-              {!pricing.perStopFare && (
-                <p className="text-xs text-slate-400 italic">Flat rate — same fare for all stops</p>
               )}
             </div>
           )}

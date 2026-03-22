@@ -1,39 +1,58 @@
-export type RouteFilter = 'all' | 'driver' | 'commuter'
+import type { JSX } from "react";
+
+export type RouteFilter = "all" | "driver" | "commuter";
 
 interface RouteTypeToggleProps {
-  value: RouteFilter
-  onChange: (v: RouteFilter) => void
-  driverCount: number
-  commuterCount: number
+  value: RouteFilter;
+  onChange: (value: RouteFilter) => void;
+  driverCount: number;
+  commuterCount: number;
 }
 
-const OPTIONS: { value: RouteFilter; label: string }[] = [
-  { value: 'all',      label: 'All' },
-  { value: 'driver',   label: 'Driver' },
-  { value: 'commuter', label: 'Community' },
-]
-
-export default function RouteTypeToggle({ value, onChange, driverCount, commuterCount }: RouteTypeToggleProps) {
-  function countFor(v: RouteFilter) {
-    if (v === 'driver')   return driverCount
-    if (v === 'commuter') return commuterCount
-    return driverCount + commuterCount
-  }
-
+export default function RouteTypeToggle({ value, onChange, driverCount, commuterCount }: RouteTypeToggleProps): JSX.Element {
   return (
-    <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
-      {OPTIONS.map((opt) => (
-        <button key={opt.value} type="button" onClick={() => onChange(opt.value)}
-          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all
-            ${value === opt.value ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-        >
-          {opt.label}
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full
-            ${value === opt.value ? 'bg-primary-100 text-primary-600' : 'bg-slate-200 text-slate-500'}`}>
-            {countFor(opt.value)}
-          </span>
-        </button>
-      ))}
+    <div className="flex p-1 bg-surface rounded-lg gap-1">
+      <ToggleItem
+        active={value === "all"}
+        onClick={() => onChange("all")}
+        label="All"
+        count={driverCount + commuterCount}
+      />
+      <ToggleItem
+        active={value === "driver"}
+        onClick={() => onChange("driver")}
+        label="Drivers"
+        count={driverCount}
+      />
+      <ToggleItem
+        active={value === "commuter"}
+        onClick={() => onChange("commuter")}
+        label="Community"
+        count={commuterCount}
+      />
     </div>
-  )
+  );
+}
+
+function ToggleItem({ active, onClick, label, count }: { active: boolean; onClick: () => void; label: string; count: number }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-[6px] transition-all
+        text-[10px] font-display uppercase tracking-widest
+        ${active 
+          ? "bg-ink text-white shadow-md border border-ink" 
+          : "text-muted hover:text-ink hover:bg-white/50"}
+      `}
+    >
+      <span>{label}</span>
+      <span className={`
+        px-1.5 py-0.5 rounded-md text-[9px] font-bold border
+        ${active ? "bg-primary-500 border-primary-600 text-white" : "bg-white border-slate-200 text-slate-400"}
+      `}>
+        {count}
+      </span>
+    </button>
+  );
 }

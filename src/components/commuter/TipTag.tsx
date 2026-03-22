@@ -4,15 +4,18 @@ interface TipTagProps {
 }
 
 const VARIANT_STYLES = {
-  default: 'bg-slate-100 text-slate-600',
-  warning: 'bg-amber-100 text-amber-700',
-  success: 'bg-green-100 text-green-700',
-  info:    'bg-primary-100 text-primary-700',
+  default: 'bg-surface border-slate-200 text-muted',
+  warning: 'bg-accent-500 border-ink text-ink shadow-sm',
+  success: 'bg-green-500 border-ink text-white shadow-sm',
+  info:    'bg-primary-500 border-ink text-white shadow-sm',
 }
 
 export default function TipTag({ label, variant = 'default' }: TipTagProps) {
   return (
-    <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${VARIANT_STYLES[variant]}`}>
+    <span className={`
+      inline-block rounded-[6px] px-2.5 py-1 text-[9px] font-display uppercase tracking-widest border-[1.5px]
+      ${VARIANT_STYLES[variant]}
+    `}>
       {label}
     </span>
   )

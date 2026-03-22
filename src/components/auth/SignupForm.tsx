@@ -85,37 +85,40 @@ export default function SignupForm() {
   // ── Step 1: Role ───────────────────────────────────────────────────────────
   if (step === 'role') {
     return (
-      <form onSubmit={handleNext} noValidate className="space-y-5">
+      <form onSubmit={handleNext} noValidate className="space-y-6">
         <div className="space-y-1 mb-2">
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-            Create account
-          </h1>
-          <p className="text-sm text-slate-500">Step 1 of 2 · Choose your role</p>
+          <h2 className="text-2xl font-display text-ink uppercase tracking-tight">
+            Create an Account
+          </h2>
+          <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
+            Step 1 of 2 · Choose your role
+          </p>
         </div>
 
         <RoleSelector selected={role} onChange={setRole} />
 
         {errors.role && (
-          <p className="text-xs text-red-500 text-center">{errors.role}</p>
+          <p className="text-xs font-bold text-primary-500 text-center uppercase tracking-tight">{errors.role}</p>
         )}
 
         <button
           type="submit"
           className="
-            w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white
-            transition-all hover:bg-primary-600 active:scale-[.98]
+            w-full rounded-xl bg-primary-500 py-4 text-[12px] font-display uppercase tracking-widest text-white
+            border-b-[4px] border-primary-700 shadow-md transition-all 
+            hover:bg-primary-600 active:border-b-0 active:translate-y-1 active:shadow-none
           "
         >
-          Continue →
+          Continue
         </button>
 
-        <p className="text-center text-sm text-slate-500">
-          Already have an account?{' '}
+        <p className="text-center text-[10px] font-bold text-muted uppercase tracking-wider">
+          Already a member?{' '}
           <Link
             to="/login"
-            className="font-semibold text-primary-600 hover:text-primary-700"
+            className="text-primary-500 hover:text-primary-600 underline underline-offset-2"
           >
-            Sign in
+            Sign In Here
           </Link>
         </p>
       </form>
@@ -129,72 +132,74 @@ export default function SignupForm() {
         <button
           type="button"
           onClick={() => setStep('role')}
-          className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1 mb-1"
+          className="text-[10px] font-bold text-muted hover:text-ink flex items-center gap-1 mb-2 uppercase tracking-widest"
         >
-          ← Back
+          Back
         </button>
-        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-          Your details
-        </h1>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-2xl font-display text-ink uppercase tracking-tight">
+          Your Details
+        </h2>
+        <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
           Step 2 of 2 ·{' '}
-          <span className="capitalize font-medium text-slate-700">{role}</span>{' '}
-          account
+          <span className="text-primary-500">{role}</span> account
         </p>
       </div>
 
       {errors.general && (
-        <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-lg bg-primary-50 border-[1.5px] border-primary-100 px-4 py-3 text-xs font-bold text-primary-600 uppercase tracking-tight">
           {errors.general}
         </div>
       )}
 
-      <FormField
-        label="Full name"
-        type="text"
-        placeholder="Juan dela Cruz"
-        autoComplete="name"
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-        error={errors.displayName}
-      />
+      <div className="space-y-3">
+        <FormField
+          label="Your Name"
+          type="text"
+          placeholder="Juan dela Cruz"
+          autoComplete="name"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          error={errors.displayName}
+        />
 
-      <FormField
-        label="Email"
-        type="email"
-        placeholder="you@example.com"
-        autoComplete="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={errors.email}
-      />
+        <FormField
+          label="Email Address"
+          type="email"
+          placeholder="juan@email.com"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={errors.email}
+        />
 
-      <FormField
-        label="Password"
-        type="password"
-        placeholder="At least 6 characters"
-        autoComplete="new-password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        error={errors.password}
-      />
+        <FormField
+          label="Password"
+          type="password"
+          placeholder="At least 6 characters"
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={errors.password}
+        />
 
-      <FormField
-        label="Confirm password"
-        type="password"
-        placeholder="••••••••"
-        autoComplete="new-password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        error={errors.confirmPassword}
-      />
+        <FormField
+          label="Confirm Password"
+          type="password"
+          placeholder="••••••••"
+          autoComplete="new-password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          error={errors.confirmPassword}
+        />
+      </div>
 
       <button
         type="submit"
         disabled={loading}
         className="
-          w-full rounded-xl bg-primary-500 py-3.5 text-sm font-semibold text-white
-          transition-all hover:bg-primary-600 active:scale-[.98]
+          w-full rounded-xl bg-primary-500 py-4 text-[12px] font-display uppercase tracking-widest text-white
+          border-b-[4px] border-primary-700 shadow-md transition-all mt-4
+          hover:bg-primary-600 active:border-b-0 active:translate-y-1 active:shadow-none
           disabled:opacity-60 disabled:cursor-not-allowed
           flex items-center justify-center gap-2
         "
@@ -202,10 +207,10 @@ export default function SignupForm() {
         {loading ? (
           <>
             <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-            Creating account…
+            Connecting…
           </>
         ) : (
-          'Create account'
+          'Sign Up Now'
         )}
       </button>
     </form>
