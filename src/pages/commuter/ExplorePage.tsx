@@ -64,6 +64,17 @@ export default function ExplorePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showMap]);
 
+  // ── Sync Location to Map ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (mapRef.current && mapLoaded && userLocation) {
+      mapRef.current.flyTo({
+        center: [userLocation.lng, userLocation.lat],
+        zoom: 14,
+        essential: true,
+      });
+    }
+  }, [userLocation, mapLoaded]);
+
   // ── Sync Routes to Map ───────────────────────────────────────────────────
   useEffect(() => {
     const map = mapRef.current;
@@ -247,7 +258,7 @@ export default function ExplorePage() {
           <div className="space-y-4 pb-2">
             <LocationPermissionBanner status={locationStatus} onRequest={requestLocation} />
 
-            <div className="relative h-72 w-full overflow-hidden rounded-xl border-[2px] border-ink shadow-lg">
+            <div className="relative h-72 w-full overflow-hidden rounded-xl border-2 border-ink shadow-lg">
               <div ref={mapContainerRef} className="h-full w-full" />
 
               {/* Legend Overlay — Signboard Style */}
@@ -321,7 +332,7 @@ export default function ExplorePage() {
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
     <div className="flex items-center gap-2.5">
-      <span className="w-2.5 h-2.5 rounded-[4px] border border-ink/20" style={{ backgroundColor: color }} />
+      <span className="w-2.5 h-2.5 rounded-sm border border-ink/20" style={{ backgroundColor: color }} />
       <span className="text-[10px] font-bold text-ink uppercase tracking-tight">{label}</span>
     </div>
   );
