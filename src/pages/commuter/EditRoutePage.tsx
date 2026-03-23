@@ -94,6 +94,10 @@ export default function EditCommuterRoutePage() {
     if (newStops.length < 2) setGeometry(null);
   }
 
+  function handleRenameStop(id: string, newName: string) {
+    setStops(stops.map(s => s.id === id ? { ...s, name: newName } : s));
+  }
+
   async function handleSave() {
     if (!route || !user) return;
     if (route.authorId !== user.uid) {
@@ -181,7 +185,14 @@ export default function EditCommuterRoutePage() {
               >
                 {i === 0 ? "S" : i === stops.length - 1 ? "E" : i}
               </span>
-              <span className="flex-1 text-sm text-slate-700 truncate">{stop.name.split(",")[0]}</span>
+              <input
+                type="text"
+                value={stop.name.split(',')[0]}
+                onChange={(e) => handleRenameStop(stop.id, e.target.value)}
+                placeholder="Stop name"
+                className="flex-1 min-w-0 text-sm font-bold text-slate-700 bg-transparent hover:bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary-500 rounded px-2 py-1 -ml-2 border-none outline-none truncate transition-all"
+                title="Click to rename stop"
+              />
               <button type="button" onClick={() => handleRemoveStop(stop.id)} className="p-1 text-red-400 hover:text-red-600">
                 <X className="w-3.5 h-3.5" />
               </button>

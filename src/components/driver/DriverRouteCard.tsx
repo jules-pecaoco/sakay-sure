@@ -1,7 +1,9 @@
-import { TramFront, Bus, Bike, Clock, Pencil, Navigation } from "lucide-react";
+import { TramFront, Bus, Bike, Clock, Pencil, Navigation, Trash2 } from "lucide-react";
 import type { DriverRoute } from "@/types";
 import { Link } from "react-router-dom";
 import ActiveToggle from "./ActiveToggle";
+import { useState } from "react";
+import { deleteDriverRoute } from "@/services/firebase/routes";
 
 interface DriverRouteCardProps {
   route: DriverRoute;
@@ -9,6 +11,22 @@ interface DriverRouteCardProps {
 
 export default function DriverRouteCard({ route }: DriverRouteCardProps) {
   const Icon = route.vehicleType === "bus" ? Bus : route.vehicleType === "jeepney" ? TramFront : Bike;
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this route?")) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteDriverRoute(route.id);
+    } catch (error) {
+      console.error("Failed to delete route:", error);
+      alert("Failed to delete route. Please try again.");
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="bg-white border-[1.5px] border-ink rounded-xl shadow-[4px_4px_0px_0px_rgba(26,18,8,0.05)] overflow-hidden group hover:border-primary-500 transition-all">
@@ -43,16 +61,25 @@ export default function DriverRouteCard({ route }: DriverRouteCardProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 shrink-0">
+        <div className="flex flex-col gap-2 shrink-0 items-end">
           <div className="w-12 h-12 rounded-xl bg-surface border-[1.5px] border-slate-200 flex items-center justify-center text-ink shadow-inner group-hover:bg-primary-50 group-hover:border-primary-200 transition-all">
             <Icon className="w-6 h-6" strokeWidth={2.2} />
           </div>
-          <Link
-            to={`/driver/edit-route/${route.id}`}
-            className="w-12 h-10 rounded-lg bg-ink text-white flex items-center justify-center shadow-md hover:bg-slate-900 active:translate-y-0.5 transition-all"
-          >
-            <Pencil className="w-4 h-4 text-accent-500" strokeWidth={2.5} />
-          </Link>
+          <div className="flex gap-1.5">
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="w-10 h-10 rounded-lg bg-red-50 text-red-600 border border-red-200 flex items-center justify-center shadow-sm hover:bg-red-600 hover:text-white active:translate-y-0.5 transition-all disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+            <Link
+              to={`/driver/edit-route/${route.id}`}
+              className="w-10 h-10 rounded-lg bg-ink text-white flex items-center justify-center shadow-md hover:bg-slate-900 active:translate-y-0.5 transition-all"
+            >
+              <Pencil className="w-4 h-4 text-accent-500" strokeWidth={2.5} />
+            </Link>
+          </div>
         </div>
       </div>
       

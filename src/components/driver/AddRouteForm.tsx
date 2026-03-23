@@ -115,6 +115,10 @@ export default function AddRouteForm() {
     if (newStops.length < 2) setGeometry(null)
   }
 
+  function handleRenameStop(id: string, newName: string) {
+    setStops(stops.map(s => s.id === id ? { ...s, name: newName } : s))
+  }
+
   function handleMoveStop(id: string, dir: 'up' | 'down') {
     const idx = stops.findIndex((s) => s.id === id)
     if (idx < 0) return
@@ -224,7 +228,14 @@ export default function AddRouteForm() {
                       ${i === 0 ? 'bg-primary-500 border-ink text-white' : i === stops.length - 1 ? 'bg-accent-500 border-ink text-ink font-bold' : 'bg-surface border-slate-200 text-ink'}`}>
                       {i === 0 ? 'START' : i === stops.length - 1 ? 'END' : i}
                     </div>
-                    <span className="flex-1 text-sm font-bold text-ink truncate uppercase tracking-tight">{stop.name.split(',')[0]}</span>
+                    <input
+                      type="text"
+                      value={stop.name.split(',')[0]}
+                      onChange={(e) => handleRenameStop(stop.id, e.target.value)}
+                      placeholder="Stop name"
+                      title="Click to rename stop"
+                      className="flex-1 min-w-0 text-sm font-bold text-ink bg-transparent hover:bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary-500 rounded px-2 py-1 -ml-2 border-none outline-none truncate uppercase tracking-tight transition-all"
+                    />
                     <div className="flex items-center gap-1.5 pl-2">
                       <button type="button" onClick={() => handleMoveStop(stop.id, 'up')} disabled={i === 0}
                         className="p-1.5 rounded-lg text-slate-400 hover:bg-surface hover:text-ink disabled:opacity-25 transition-all">

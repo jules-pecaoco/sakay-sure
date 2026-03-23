@@ -1,9 +1,11 @@
-import { TramFront, Bus, Bike, User, Clock, ChevronRight, Pencil, Banknote, Snowflake, AlertTriangle } from "lucide-react";
+import { TramFront, Bus, Bike, User, Clock, ChevronRight, Pencil, Banknote, Snowflake, AlertTriangle, Trash2 } from "lucide-react";
 import type { DriverRoute, CommuterRoute } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import RouteVoteButtons from "@/components/commuter/RouteVoteButtons";
 import StatusBadge from "@/components/common/StatusBadge";
+import { useState } from "react";
+import { deleteCommuterRoute } from "@/services/firebase/commuterRoutes";
 
 interface RouteCardProps {
   onSelect?: (id: string) => void;
@@ -65,6 +67,21 @@ export function CommuterRouteCard({ route, onSelect }: RouteCardProps & { route:
   const navigate = useNavigate();
   const { user } = useAuth();
   const isAuthor = user?.uid === route.authorId;
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this route guide?")) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteCommuterRoute(route.id);
+    } catch (error) {
+      console.error("Failed to delete route:", error);
+      alert("Failed to delete route. Please try again.");
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div
@@ -88,15 +105,24 @@ export function CommuterRouteCard({ route, onSelect }: RouteCardProps & { route:
         </div>
         
         {isAuthor && (
-          <button
-            className="p-2 rounded-lg bg-surface border border-slate-200 text-ink hover:bg-primary-500 hover:text-white hover:border-primary-600 transition-all shrink-0"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/commuter/edit-route/${route.id}`);
-            }}
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
+          <div className="flex gap-2 shrink-0">
+            <button
+              disabled={isDeleting}
+              onClick={handleDelete}
+              className="p-2 rounded-lg bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white active:translate-y-0.5 transition-all disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <button
+              className="p-2 rounded-lg bg-surface border border-slate-200 text-ink hover:bg-primary-500 hover:text-white hover:border-primary-600 active:translate-y-0.5 transition-all"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/commuter/edit-route/${route.id}`);
+              }}
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </div>
 
